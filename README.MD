@@ -1,5 +1,5 @@
 # Oak-GraphQL
-A simple middleware for oak deno framework.
+A simple graphql middleware for oak deno framework.
 
 ## Simple example
 ```ts
