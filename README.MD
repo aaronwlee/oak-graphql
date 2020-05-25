@@ -67,11 +67,7 @@ const resolvers = {
 
 const GraphQLService = applyGraphQL({
   typeDefs: types,
-  resolvers: resolvers,
-  context: (ctx) => {
-    // get auth from ctx
-    return { user: "Aaron" };
-  }
+  resolvers: resolvers
 })
 
 app.use(GraphQLService.routes(), GraphQLService.allowedMethods());
