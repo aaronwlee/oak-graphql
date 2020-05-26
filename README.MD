@@ -4,7 +4,7 @@ A simple graphql middleware for oak deno framework.
 ## Simple example
 ```ts
 import { Application } from "https://deno.land/x/oak/mod.ts";
-import { applyGraphQL, gql } from "https://raw.githubusercontent.com/aaronwlee/Oak-GraphQL/master/mod.ts";
+import { applyGraphQL, gql } from "https://deno.land/x/oak_graphql/mod.ts";
 
 const app = new Application();
 
