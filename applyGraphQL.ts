@@ -72,8 +72,9 @@ export const applyGraphQL = ({
       const prefersHTML = request.accepts("text/html");
 
       if (prefersHTML) {
+        console.log(request.url.origin + path)
         const playground = renderPlaygroundPage({
-          endpoint: request.url.origin,
+          endpoint: request.url.origin + path,
           subscriptionEndpoint: request.url.origin + path,
         });
         response.status = 200;
