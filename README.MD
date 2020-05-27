@@ -1,6 +1,8 @@
 # Oak-GraphQL
 A simple graphql middleware for oak deno framework.
 
+![alt text](https://github.com/aaronwlee/Oak-GraphQL/blob/master/playground.JPG "Oak-GraphQL")
+
 ## Simple example
 ```ts
 import { Application } from "https://deno.land/x/oak/mod.ts";
