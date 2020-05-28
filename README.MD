@@ -5,6 +5,9 @@ A simple graphql middleware for oak deno framework.
 
 ! Make sure your playground endpoint indicates same as your URL http://localhost:8080/graphql
 
+![alt text](https://github.com/aaronwlee/Oak-GraphQL/blob/master/mustsame.JPG "Oak-GraphQL")
+
+
 ## Simple example
 ```ts
 import { Application } from "https://deno.land/x/oak/mod.ts";
