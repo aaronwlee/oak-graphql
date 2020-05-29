@@ -72,7 +72,7 @@ const resolvers = {
   },
 };
 
-const GraphQLService = applyGraphQL({
+const GraphQLService = await applyGraphQL({
   typeDefs: types,
   resolvers: resolvers
 })

@@ -20,18 +20,18 @@ export interface ResolversProps {
   [dynamicProperty: string]: any;
 }
 
-export const applyGraphQL = ({
+export const applyGraphQL = async ({
   path = "/graphql",
   typeDefs,
   resolvers,
   context,
   usePlayground = true,
-}: ApplyGraphQLOptions): Router => {
+}: ApplyGraphQLOptions): Promise<Router> => {
   const router = new Router();
 
   const schema = makeExecutableSchema({ typeDefs, resolvers });
 
-  router.post(path, async (ctx) => {
+  await router.post(path, async (ctx) => {
     const { response, request } = ctx;
     const contextResult = context ? context(ctx) : undefined;
     if (request.hasBody) {
@@ -63,7 +63,7 @@ export const applyGraphQL = ({
     }
   });
 
-  router.get(path, async (ctx) => {
+  await router.get(path, async (ctx) => {
     const { request, response } = ctx;
     if (usePlayground) {
       // perform more expensive content-type check only if necessary
@@ -72,7 +72,6 @@ export const applyGraphQL = ({
       const prefersHTML = request.accepts("text/html");
 
       if (prefersHTML) {
-        console.log(request.url.origin + path)
         const playground = renderPlaygroundPage({
           endpoint: request.url.origin + path,
           subscriptionEndpoint: request.url.origin + path,
