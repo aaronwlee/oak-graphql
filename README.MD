@@ -63,7 +63,7 @@ const resolvers = {
     },
   },
   Mutation: {
-    setUser: (parent: any, {firstName, lastName}: any, context: any, info: any) => {
+    setUser: (parent: any, {input: {firstName, lastName}}: any, context: any, info: any) => {
       console.log("input:", firstName, lastName);
       return {
         done: true,
