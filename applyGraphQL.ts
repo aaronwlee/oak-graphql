@@ -37,7 +37,7 @@ export const applyGraphQL = async ({
     if (request.hasBody) {
       try {
         const body = (await request.body()).value;
-        const result = await graphql(
+        const result = await (graphql as any)(
           schema,
           body.query,
           resolvers,

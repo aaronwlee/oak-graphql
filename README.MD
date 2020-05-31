@@ -11,7 +11,9 @@ A simple graphql middleware for oak deno framework.
 ## Simple example
 ```ts
 import { Application } from "https://deno.land/x/oak/mod.ts";
-import { applyGraphQL, gql } from "https://deno.land/x/oak_graphql/mod.ts";
+import { applyGraphQL, gql, PubSub } from "https://deno.land/x/oak_graphql/mod.ts";
+
+const pubsub = new PubSub();
 
 const app = new Application();
 
@@ -28,7 +30,11 @@ app.use(async (ctx, next) => {
   ctx.response.headers.set("X-Response-Time", `${ms}ms`);
 });
 
-const types = gql`
+const types = (gql as any)`
+type Subscription {
+  userAdded: User
+}
+
 type User {
   firstName: String
   lastName: String
@@ -52,9 +58,17 @@ type Mutation {
 }
 `;
 
+const USER_ADDED = 'USER_ADDED';
+
 const resolvers = {
+  Subscription: {
+    userAdded: {
+      // Additional event labels can be passed to asyncIterator creation
+      subscribe: () => pubsub.asyncIterator([USER_ADDED]),
+    },
+  },
   Query: {
-    getUser: (parent: any, {id}: any, context: any, info: any) => {
+    getUser: (parent: any, { id }: any, context: any, info: any) => {
       console.log("id", id, context);
       return {
         firstName: "wooseok",
@@ -63,7 +77,7 @@ const resolvers = {
     },
   },
   Mutation: {
-    setUser: (parent: any, {input: {firstName, lastName}}: any, context: any, info: any) => {
+    setUser: (parent: any, { input: { firstName, lastName } }: any, context: any, info: any) => {
       console.log("input:", firstName, lastName);
       return {
         done: true,
@@ -74,19 +88,25 @@ const resolvers = {
 
 const GraphQLService = await applyGraphQL({
   typeDefs: types,
-  resolvers: resolvers
+  resolvers: resolvers,
+  context: (ctx) => {
+    return { user: "Aaron" };
+  }
 })
+
 
 app.use(GraphQLService.routes(), GraphQLService.allowedMethods());
 
 console.log("Server start at http://localhost:8080");
 await app.listen({ port: 8080 });
+
 ```
 
 ## TODO
 - [ ] Add cache
 - [ ] Enable the upload
 - [ ] Enable the JSON scalar
+- [x] Add Subscription [Detail](https://www.apollographql.com/docs/apollo-server/data/subscriptions/)
 
 ## Method
 ### gql 

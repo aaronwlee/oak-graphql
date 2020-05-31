@@ -4,7 +4,7 @@ export type FilterFn = (rootValue?: any, args?: any, context?: any, info?: any) 
 export type ResolverFn = (rootValue?: any, args?: any, context?: any, info?: any) => AsyncIterator<any>;
 
 export const withFilter = (asyncIteratorFn: ResolverFn, filterFn: FilterFn): ResolverFn => {
-  return (rootValue: any, args: any, context: any, info: any): AsyncIterator<any> => {
+  return (rootValue: any, args: any, context: any, info: any): any => {
     const asyncIterator: any = asyncIteratorFn(rootValue, args, context, info);
 
     const getNextPromise = () => {
@@ -35,7 +35,7 @@ export const withFilter = (asyncIteratorFn: ResolverFn, filterFn: FilterFn): Res
       return() {
         return asyncIterator.return();
       },
-      throw(error) {
+      throw(error: any) {
         return asyncIterator.throw(error);
       },
       [$$asyncIterator]() {
