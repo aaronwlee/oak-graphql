@@ -36,11 +36,14 @@ export const applyGraphQL = async ({
     const contextResult = context ? context(ctx) : undefined;
     if (request.hasBody) {
       try {
+        const body = (await request.body()).value;
         const result = await graphql(
           schema,
-          (await request.body()).value.query,
+          body.query,
           resolvers,
           contextResult,
+          body.variables || {},
+          body.operationName || "",
         );
         if (result.data) {
           response.status = 200;
@@ -77,7 +80,7 @@ export const applyGraphQL = async ({
           subscriptionEndpoint: request.url.origin + path,
         });
         response.status = 200;
-        response.body = playground
+        response.body = playground;
         return;
       }
     }
