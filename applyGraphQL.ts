@@ -42,8 +42,8 @@ export const applyGraphQL = async ({
           body.query,
           resolvers,
           contextResult,
-          body.variables || {},
-          body.operationName || "",
+          body.variables || undefined,
+          body.operationName || undefined,
         );
         if (result.data) {
           response.status = 200;

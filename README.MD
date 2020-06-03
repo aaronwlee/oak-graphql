@@ -11,9 +11,7 @@ A simple graphql middleware for oak deno framework.
 ## Simple example
 ```ts
 import { Application } from "https://deno.land/x/oak/mod.ts";
-import { applyGraphQL, gql, PubSub } from "https://deno.land/x/oak_graphql/mod.ts";
-
-const pubsub = new PubSub();
+import { applyGraphQL, gql } from "https://deno.land/x/oak_graphql/mod.ts";
 
 const app = new Application();
 
@@ -31,10 +29,6 @@ app.use(async (ctx, next) => {
 });
 
 const types = (gql as any)`
-type Subscription {
-  userAdded: User
-}
-
 type User {
   firstName: String
   lastName: String
@@ -58,15 +52,7 @@ type Mutation {
 }
 `;
 
-const USER_ADDED = 'USER_ADDED';
-
 const resolvers = {
-  Subscription: {
-    userAdded: {
-      // Additional event labels can be passed to asyncIterator creation
-      subscribe: () => pubsub.asyncIterator([USER_ADDED]),
-    },
-  },
   Query: {
     getUser: (parent: any, { id }: any, context: any, info: any) => {
       console.log("id", id, context);
@@ -106,7 +92,6 @@ await app.listen({ port: 8080 });
 - [ ] Add cache
 - [ ] Enable the upload
 - [ ] Enable the JSON scalar
-- [x] Add Subscription [Detail](https://www.apollographql.com/docs/apollo-server/data/subscriptions/)
 
 ## Method
 ### gql 
