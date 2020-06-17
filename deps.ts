@@ -1,9 +1,11 @@
-import gql from "https://cdn.pika.dev/graphql-tag@^2.10.1";
-export { gql };
+export { default as gql } from "https://cdn.pika.dev/graphql-tag@^2.10.1";
 
+
+// @ts-nocheck
 export {
   GraphQLEnumType,
   isSchema,
+  getOperationAST,
   GraphQLFieldConfig,
   isSpecifiedScalarType,
   isEnumType,
@@ -134,3 +136,5 @@ export {
   ValueNode
 } from "https://cdn.pika.dev/graphql@^15.0.0";
 
+import { GraphQLError } from "https://cdn.pika.dev/graphql@^15.0.0";
+export const GQLError = GraphQLError as any;

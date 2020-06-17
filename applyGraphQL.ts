@@ -2,7 +2,7 @@ import {
   Router,
   RouterContext,
 } from "https://deno.land/x/oak/mod.ts";
-import { graphql } from "./deps.ts";
+import { graphql, GQLError } from "./deps.ts";
 import { renderPlaygroundPage } from "./graphql-playground-html/render-playground-html.ts";
 import { makeExecutableSchema } from "./graphql-tools/schema/makeExecutableSchema.ts";
 
@@ -33,9 +33,9 @@ export const applyGraphQL = async ({
 
   await router.post(path, async (ctx) => {
     const { response, request } = ctx;
-    const contextResult = context ? context(ctx) : undefined;
     if (request.hasBody) {
       try {
+        const contextResult = context ? await context(ctx) : undefined;
         const body = (await request.body()).value;
         const result = await (graphql as any)(
           schema,
@@ -45,6 +45,7 @@ export const applyGraphQL = async ({
           body.variables || undefined,
           body.operationName || undefined,
         );
+
         if (result.data) {
           response.status = 200;
           response.body = result;
@@ -52,15 +53,16 @@ export const applyGraphQL = async ({
         } else if (result.errors) {
           const { errors } = result;
           response.status = 400;
-          response.body = { error: { errors } };
+          response.body = new GQLError(errors instanceof Error ? errors.message : JSON.stringify(errors, undefined, 2));
           return;
         }
+
         response.status = 400;
         response.body = "gql Error";
         return;
       } catch (error) {
-        response.status = 400;
-        response.body = { error };
+        response.status = 500;
+        response.body = new GQLError(error instanceof Error ? error.message : JSON.stringify(error, undefined, 2));
         return;
       }
     }
