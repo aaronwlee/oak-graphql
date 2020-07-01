@@ -20,18 +20,23 @@ export interface ResolversProps {
   [dynamicProperty: string]: any;
 }
 
+interface DynamicVersionRouter {
+  routes: any;
+  allowedMethods: any;
+}
+
 export const applyGraphQL = async ({
   path = "/graphql",
   typeDefs,
   resolvers,
   context,
   usePlayground = true,
-}: ApplyGraphQLOptions): Promise<Router> => {
+}: ApplyGraphQLOptions): Promise<DynamicVersionRouter> => {
   const router = new Router();
 
   const schema = makeExecutableSchema({ typeDefs, resolvers });
 
-  await router.post(path, async (ctx) => {
+  await router.post(path, async (ctx: any) => {
     const { response, request } = ctx;
     if (request.hasBody) {
       try {
@@ -81,7 +86,7 @@ export const applyGraphQL = async ({
     }
   });
 
-  await router.get(path, async (ctx) => {
+  await router.get(path, async (ctx: any) => {
     const { request, response } = ctx;
     if (usePlayground) {
       // perform more expensive content-type check only if necessary
@@ -101,5 +106,5 @@ export const applyGraphQL = async ({
     }
   });
 
-  return router;
+  return router as DynamicVersionRouter;
 };
