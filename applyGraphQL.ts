@@ -46,14 +46,22 @@ export const applyGraphQL = async ({
           body.operationName || undefined,
         );
 
-        if (result.data) {
-          response.status = 200;
-          response.body = result;
-          return;
-        } else if (result.errors) {
+        if (result.errors) {
+          console.log("here")
           const { errors } = result;
           response.status = 400;
-          response.body = new GQLError(errors instanceof Error ? errors.message : JSON.stringify(errors, undefined, 2));
+          response.body = {
+            data: null,
+            error: Array.isArray(errors) ? errors[0] : errors,
+          };
+          return;
+        } else if (result.data) {
+          response.status = 200;
+          const { data } = result;
+          response.body = {
+            data,
+            error: null
+          };
           return;
         }
 
@@ -62,7 +70,12 @@ export const applyGraphQL = async ({
         return;
       } catch (error) {
         response.status = 500;
-        response.body = new GQLError(error instanceof Error ? error.message : JSON.stringify(error, undefined, 2));
+        response.body = {
+          data: null,
+          error: {
+            message: error.message ? error.message : error,
+          },
+        }
         return;
       }
     }
