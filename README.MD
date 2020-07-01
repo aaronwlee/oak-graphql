@@ -11,7 +11,7 @@ A simple graphql middleware for oak deno framework.
 ## Simple example
 ```ts
 import { Application } from "https://deno.land/x/oak/mod.ts";
-import { applyGraphQL, gql } from "https://deno.land/x/oak_graphql/mod.ts";
+import { applyGraphQL, gql, GQLError } from "https://deno.land/x/oak_graphql/mod.ts";
 
 const app = new Application();
 
@@ -56,6 +56,9 @@ const resolvers = {
   Query: {
     getUser: (parent: any, { id }: any, context: any, info: any) => {
       console.log("id", id, context);
+      if(context.user === "Aaron") {
+        throw new GQLError({ type: "auth error in context" })
+      }
       return {
         firstName: "wooseok",
         lastName: "lee",
@@ -98,6 +101,15 @@ await app.listen({ port: 8080 });
 > [GraphQL-tag](https://github.com/apollographql/graphql-tag)
 Parsing GraphQL queries
 - `gql` A JavaScript template literal tag that parses GraphQL query strings into the standard GraphQL AST.
+
+### GQLError
+An error handler
+> Example
+```ts
+throw new GQLError("string");
+or
+throw new GQLError({type: "General error", detail: "somthing critical!"});
+```
 
 ### applyGraphQL
 A Generator which based Attain Router class creates some middlewares for supporting the GraphQL.
