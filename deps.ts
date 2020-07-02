@@ -134,7 +134,7 @@ export {
   doTypesOverlap,
   isCompositeType,
   ValueNode
-} from "https://cdn.pika.dev/graphql@v14.6.0";
+} from "https://cdn.pika.dev/graphql@14.6.0";
 
-import { GraphQLError } from "https://cdn.pika.dev/graphql@v14.6.0";
+import { GraphQLError } from "https://cdn.pika.dev/graphql@14.6.0";
 export const GQLError = GraphQLError as any;

@@ -52,7 +52,6 @@ export const applyGraphQL = async ({
         );
 
         if (result.errors) {
-          console.log("here")
           const { errors } = result;
           response.status = 400;
           response.body = {
