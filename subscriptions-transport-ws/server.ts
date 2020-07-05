@@ -1,15 +1,12 @@
-import * as WebSocket from 'https://deno.land/std/ws/mod.ts';
+import * as WebSocket from 'https://cdn.pika.dev/ws@^7.3.0';
 
 import MessageTypes from './message-types.ts';
 import isObject from './utils/is-object.ts';
 import {
   parse,
-  ExecutionResult,
-  DocumentNode,
   validate,
   ValidationContext,
   specifiedRules,
-  GraphQLFieldResolver,
   GraphQLSchema
 } from '../deps.ts';
 import { createEmptyIterable } from './utils/empty-iterable.ts';
@@ -17,23 +14,23 @@ import { createAsyncIterator, forAwaitEach, isAsyncIterable } from 'https://cdn.
 import { isASubscriptionOperation } from './utils/is-subscriptions.ts';
 import { parseLegacyProtocolMessage } from './legacy/parse-legacy-protocol.ts';
 
-export type ExecutionIterator = AsyncIterator<ExecutionResult>;
+export type ExecutionIterator = AsyncIterator<any>;
 
 export interface ExecutionParams<TContext = any> {
-  query: string | DocumentNode;
+  query: string | any;
   variables: { [key: string]: any };
   operationName: string;
   context: TContext;
   formatResponse?: Function;
   formatError?: Function;
   callback?: Function;
-  schema?: GraphQLSchema;
+  schema?: any;
 }
 
 export type ConnectionContext = {
   initPromise?: Promise<any>,
   isLegacy: boolean,
-  socket: WebSocket,
+  socket: any,
   request: any,
   operations: {
     [opId: string]: ExecutionIterator,
@@ -53,35 +50,30 @@ export interface OperationMessage {
   type: string;
 }
 
-export type ExecuteFunction = (schema: GraphQLSchema,
-                               document: DocumentNode,
-                               rootValue?: any,
-                               contextValue?: any,
-                               variableValues?: { [key: string]: any },
-                               operationName?: string,
-                               fieldResolver?: GraphQLFieldResolver<any, any>) =>
-                               ExecutionResult |
-                               Promise<ExecutionResult> |
-                               AsyncIterator<ExecutionResult>;
+export type ExecuteFunction = (schema: any,
+  document: any,
+  rootValue?: any,
+  contextValue?: any,
+  variableValues?: { [key: string]: any },
+  operationName?: string,
+  fieldResolver?: any) => any
 
-export type SubscribeFunction = (schema: GraphQLSchema,
-                                 document: DocumentNode,
-                                 rootValue?: any,
-                                 contextValue?: any,
-                                 variableValues?: { [key: string]: any },
-                                 operationName?: string,
-                                 fieldResolver?: GraphQLFieldResolver<any, any>,
-                                 subscribeFieldResolver?: GraphQLFieldResolver<any, any>) =>
-                                 AsyncIterator<ExecutionResult> |
-                                 Promise<AsyncIterator<ExecutionResult> | ExecutionResult>;
+export type SubscribeFunction = (schema: any,
+  document: any,
+  rootValue?: any,
+  contextValue?: any,
+  variableValues?: { [key: string]: any },
+  operationName?: string,
+  fieldResolver?: any,
+  subscribeFieldResolver?: any) => any
 
 export interface ServerOptions {
   rootValue?: any;
-  schema?: GraphQLSchema;
+  schema?: any;
   execute?: ExecuteFunction;
   subscribe?: SubscribeFunction;
   validationRules?:
-    Array<(context: ValidationContext) => any> | ReadonlyArray<any>;
+  Array<(context: any) => any> | ReadonlyArray<any>;
   onOperation?: Function;
   onOperationComplete?: Function;
   onConnect?: Function;
@@ -97,22 +89,22 @@ export class SubscriptionServer {
   private onConnect?: Function;
   private onDisconnect?: Function;
 
-  private wsServer: WebSocket.Server;
+  private wsServer: any;
   private execute?: ExecuteFunction;
   private subscribe?: SubscribeFunction;
-  private schema: GraphQLSchema;
+  private schema: any;
   private rootValue: any;
   private keepAlive?: number;
   private closeHandler: () => void;
   private specifiedRules:
-    Array<(context: ValidationContext) => any> |
+    Array<(context: any) => any> |
     ReadonlyArray<any>;
 
-  public static create(options: ServerOptions, socketOptionsOrServer: WebSocket.ServerOptions | WebSocket.Server) {
-    return new SubscriptionServer(options, socketOptionsOrServer);
+  public static create(options: ServerOptions) {
+    return new SubscriptionServer(options);
   }
 
-  constructor(options: ServerOptions, socketOptionsOrServer: WebSocket.ServerOptions | WebSocket.Server) {
+  constructor(options: ServerOptions) {
     const {
       onOperation, onOperationComplete, onConnect, onDisconnect, keepAlive,
     } = options;
@@ -126,27 +118,22 @@ export class SubscriptionServer {
     this.onDisconnect = onDisconnect;
     this.keepAlive = keepAlive;
 
-    if (isWebSocketServer(socketOptionsOrServer)) {
-      this.wsServer = <WebSocket.Server>socketOptionsOrServer;
-    } else {
-      // Init and connect WebSocket server to http
-      this.wsServer = new WebSocket.Server(socketOptionsOrServer || {});
-    }
+    this.wsServer = new (WebSocket as any).Server();
 
-    const connectionHandler = ((socket: WebSocket, request: IncomingMessage) => {
+    const connectionHandler = ((socket: any, request: any) => {
       // Add `upgradeReq` to the socket object to support old API, without creating a memory leak
       // See: https://github.com/websockets/ws/pull/1099
       (socket as any).upgradeReq = request;
       // NOTE: the old GRAPHQL_SUBSCRIPTIONS protocol support should be removed in the future
-      if (socket.protocol === undefined ||
-        (socket.protocol.indexOf(GRAPHQL_WS) === -1 && socket.protocol.indexOf(GRAPHQL_SUBSCRIPTIONS) === -1)) {
-        // Close the connection with an error code, ws v2 ensures that the
-        // connection is cleaned up even when the closing handshake fails.
-        // 1002: protocol error
-        socket.close(1002);
+      // if (socket.protocol === undefined ||
+      //   (socket.protocol.indexOf(GRAPHQL_WS) === -1 && socket.protocol.indexOf(GRAPHQL_SUBSCRIPTIONS) === -1)) {
+      //   // Close the connection with an error code, ws v2 ensures that the
+      //   // connection is cleaned up even when the closing handshake fails.
+      //   // 1002: protocol error
+      //   socket.close(1002);
 
-        return;
-      }
+      //   return;
+      // }
 
       const connectionContext: ConnectionContext = Object.create(null);
       connectionContext.initPromise = Promise.resolve(true);
@@ -188,7 +175,7 @@ export class SubscriptionServer {
     };
   }
 
-  public get server(): WebSocket.Server {
+  public get server(): any {
     return this.wsServer;
   }
 
@@ -212,7 +199,7 @@ export class SubscriptionServer {
   private unsubscribe(connectionContext: ConnectionContext, opId: string) {
     if (connectionContext.operations && connectionContext.operations[opId]) {
       if (connectionContext.operations[opId].return) {
-        connectionContext.operations[opId].return();
+        (connectionContext.operations as any)[opId].return();
       }
 
       delete connectionContext.operations[opId];
@@ -231,15 +218,15 @@ export class SubscriptionServer {
 
   private onMessage(connectionContext: ConnectionContext) {
     return (message: any) => {
-      let parsedMessage: OperationMessage;
+      let parsedMessage: any;
       try {
         parsedMessage = parseLegacyProtocolMessage(connectionContext, JSON.parse(message));
       } catch (e) {
-        this.sendError(connectionContext, null, { message: e.message }, MessageTypes.GQL_CONNECTION_ERROR);
+        (this.sendError as any)(connectionContext, null, { message: e.message }, MessageTypes.GQL_CONNECTION_ERROR);
         return;
       }
 
-      const opId = parsedMessage.id;
+      const opId: any = parsedMessage.id;
       switch (parsedMessage.type) {
         case MessageTypes.GQL_CONNECTION_INIT:
           if (this.onConnect) {
@@ -247,19 +234,19 @@ export class SubscriptionServer {
               try {
                 // TODO - this should become a function call with just 2 arguments in the future
                 // when we release the breaking change api: parsedMessage.payload and connectionContext
-                resolve(this.onConnect(parsedMessage.payload, connectionContext.socket, connectionContext));
+                resolve((this.onConnect as any)(parsedMessage.payload, connectionContext.socket, connectionContext));
               } catch (e) {
                 reject(e);
               }
             });
           }
 
-          connectionContext.initPromise.then((result) => {
+          (connectionContext.initPromise as any).then((result: any) => {
             if (result === false) {
               throw new Error('Prohibited connection!');
             }
 
-            this.sendMessage(
+            (this.sendError as any)(
               connectionContext,
               undefined,
               MessageTypes.GQL_CONNECTION_ACK,
@@ -278,7 +265,7 @@ export class SubscriptionServer {
               }, this.keepAlive);
             }
           }).catch((error: Error) => {
-            this.sendError(
+            (this.sendError as any)(
               connectionContext,
               opId,
               { message: error.message },
@@ -301,13 +288,13 @@ export class SubscriptionServer {
           break;
 
         case MessageTypes.GQL_START:
-          connectionContext.initPromise.then((initResult) => {
+          (connectionContext.initPromise as any).then((initResult: any) => {
             // if we already have a subscription with this id, unsubscribe from it first
             if (connectionContext.operations && connectionContext.operations[opId]) {
               this.unsubscribe(connectionContext, opId);
             }
 
-            const baseParams: ExecutionParams = {
+            const baseParams: any = {
               query: parsedMessage.payload.query,
               variables: parsedMessage.payload.variables,
               operationName: parsedMessage.payload.operationName,
@@ -343,14 +330,14 @@ export class SubscriptionServer {
                 throw new Error(error);
               }
 
-              const document = typeof baseParams.query !== 'string' ? baseParams.query : parse(baseParams.query);
-              let executionPromise: Promise<AsyncIterator<ExecutionResult> | ExecutionResult>;
-              const validationErrors = validate(params.schema, document, this.specifiedRules);
+              const document = typeof baseParams.query !== 'string' ? baseParams.query : (parse as any)(baseParams.query);
+              let executionPromise: Promise<AsyncIterator<any> | any>;
+              const validationErrors = (validate as any)(params.schema, document, this.specifiedRules);
 
-              if ( validationErrors.length > 0 ) {
+              if (validationErrors.length > 0) {
                 executionPromise = Promise.resolve({ errors: validationErrors });
               } else {
-                let executor: SubscribeFunction | ExecuteFunction = this.execute;
+                let executor: any = this.execute;
                 if (this.subscribe && isASubscriptionOperation(document, params.operationName)) {
                   executor = this.subscribe;
                 }
@@ -364,13 +351,13 @@ export class SubscriptionServer {
 
               return executionPromise.then((executionResult) => ({
                 executionIterable: isAsyncIterable(executionResult) ?
-                  executionResult : createAsyncIterator([ executionResult ]),
+                  executionResult : createAsyncIterator([executionResult]),
                 params,
               }));
             }).then(({ executionIterable, params }) => {
-              forAwaitEach(
+              (forAwaitEach as any)(
                 executionIterable as any,
-                (value: ExecutionResult) => {
+                (value: any) => {
                   let result = value;
 
                   if (params.formatResponse) {
@@ -406,7 +393,7 @@ export class SubscriptionServer {
                 });
 
               return executionIterable;
-            }).then((subscription: ExecutionIterator) => {
+            }).then((subscription: any) => {
               connectionContext.operations[opId] = subscription;
             }).then(() => {
               // NOTE: This is a temporary code to support the legacy protocol.
@@ -424,7 +411,7 @@ export class SubscriptionServer {
               return;
             });
             return promisedParams;
-          }).catch((error) => {
+          }).catch((error: any) => {
             // Handle initPromise rejected
             this.sendError(connectionContext, opId, { message: error.message });
             this.unsubscribe(connectionContext, opId);
@@ -444,9 +431,9 @@ export class SubscriptionServer {
 
   private sendKeepAlive(connectionContext: ConnectionContext): void {
     if (connectionContext.isLegacy) {
-      this.sendMessage(connectionContext, undefined, MessageTypes.KEEP_ALIVE, undefined);
+      (this.sendMessage as any)(connectionContext, undefined, MessageTypes.KEEP_ALIVE, undefined);
     } else {
-      this.sendMessage(connectionContext, undefined, MessageTypes.GQL_CONNECTION_KEEP_ALIVE, undefined);
+      (this.sendMessage as any)(connectionContext, undefined, MessageTypes.GQL_CONNECTION_KEEP_ALIVE, undefined);
     }
   }
 
@@ -463,12 +450,12 @@ export class SubscriptionServer {
   }
 
   private sendError(connectionContext: ConnectionContext, opId: string, errorPayload: any,
-                    overrideDefaultErrorType?: string): void {
+    overrideDefaultErrorType?: string): void {
     const sanitizedOverrideDefaultErrorType = overrideDefaultErrorType || MessageTypes.GQL_ERROR;
     if ([
-        MessageTypes.GQL_CONNECTION_ERROR,
-        MessageTypes.GQL_ERROR,
-      ].indexOf(sanitizedOverrideDefaultErrorType) === -1) {
+      MessageTypes.GQL_CONNECTION_ERROR,
+      MessageTypes.GQL_ERROR,
+    ].indexOf(sanitizedOverrideDefaultErrorType) === -1) {
       throw new Error('overrideDefaultErrorType should be one of the allowed error messages' +
         ' GQL_CONNECTION_ERROR or GQL_ERROR');
     }

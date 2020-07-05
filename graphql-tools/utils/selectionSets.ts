@@ -1,11 +1,11 @@
-import { OperationDefinitionNode, SelectionSetNode, parse, Kind, GraphQLObjectType, getNamedType } from "../../deps.ts";
+import { parse, Kind, GraphQLObjectType, getNamedType } from "../../deps.ts";
 
-export function parseSelectionSet(selectionSet: string): SelectionSetNode {
-  const query = parse(selectionSet).definitions[0] as OperationDefinitionNode;
+export function parseSelectionSet(selectionSet: string): any {
+  const query = (parse as any)(selectionSet).definitions[0] as any;
   return query.selectionSet;
 }
 
-export function typeContainsSelectionSet(type: GraphQLObjectType, selectionSet: SelectionSetNode): boolean {
+export function typeContainsSelectionSet(type: any, selectionSet: any): boolean {
   const fields = type.getFields();
 
   for (const selection of selectionSet.selections) {
@@ -17,7 +17,7 @@ export function typeContainsSelectionSet(type: GraphQLObjectType, selectionSet: 
       }
 
       if (selection.selectionSet != null) {
-        return typeContainsSelectionSet(getNamedType(field.type) as GraphQLObjectType, selection.selectionSet);
+        return typeContainsSelectionSet(getNamedType(field.type) as any, selection.selectionSet);
       }
     } else if (selection.kind === Kind.INLINE_FRAGMENT) {
       const containsSelectionSet = typeContainsSelectionSet(type, selection.selectionSet);

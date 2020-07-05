@@ -1,12 +1,12 @@
-import { GraphQLInputType, ArgumentNode, VariableDefinitionNode, Kind } from "../../deps.ts";
+import { Kind } from "../../deps.ts";
 
 import { astFromType } from './astFromType.ts';
 
 export function updateArgument(
   argName: string,
-  argType: GraphQLInputType,
-  argumentNodes: Record<string, ArgumentNode>,
-  variableDefinitionsMap: Record<string, VariableDefinitionNode>,
+  argType: any,
+  argumentNodes: Record<string, any>,
+  variableDefinitionsMap: Record<string, any>,
   variableValues: Record<string, any>,
   newArg: any
 ): void {

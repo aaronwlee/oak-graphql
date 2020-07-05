@@ -1,6 +1,6 @@
 import { $$asyncIterator } from 'https://cdn.pika.dev/iterall@^1.3.0';
 
-export const createEmptyIterable = (): AsyncIterator<any> => {
+export const createEmptyIterable = (): any => {
   return {
     next() {
       return Promise.resolve({ value: undefined, done: true });

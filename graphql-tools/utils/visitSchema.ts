@@ -3,9 +3,6 @@ import {
   GraphQLObjectType,
   GraphQLSchema,
   isNamedType,
-  GraphQLType,
-  GraphQLNamedType,
-  GraphQLInputField,
   isSchema,
   isObjectType,
   isInterfaceType,
@@ -14,7 +11,6 @@ import {
   isUnionType,
   isEnumType,
   isInputType,
-  GraphQLEnumValue,
   GraphQLEnumType,
 } from "../../deps.ts";
 
@@ -40,7 +36,7 @@ function isSchemaVisitor(obj: any): obj is SchemaVisitor {
 
 // Generic function for visiting GraphQLSchema objects.
 export function visitSchema(
-  schema: GraphQLSchema,
+  schema: typeof GraphQLSchema,
   // To accommodate as many different visitor patterns as possible, the
   // visitSchema function does not simply accept a single instance of the
   // SchemaVisitor class, but instead accepts a function that takes the
@@ -55,7 +51,7 @@ export function visitSchema(
   // visitor pattern that benefits from this abstraction, see the
   // SchemaDirectiveVisitor class below.
   visitorOrVisitorSelector: VisitorSelector | Array<SchemaVisitor | SchemaVisitorMap> | SchemaVisitor | SchemaVisitorMap
-): GraphQLSchema {
+): typeof GraphQLSchema {
   const visitorSelector =
     typeof visitorOrVisitorSelector === 'function' ? visitorOrVisitorSelector : () => visitorOrVisitorSelector;
 
@@ -121,7 +117,7 @@ export function visitSchema(
       // for SchemaVisitor subclasses that rely on the original schema object.
       callMethod('visitSchema', type);
 
-      const typeMap: Record<string, GraphQLNamedType | null> = type.getTypeMap();
+      const typeMap: Record<string, any | null> = (type as any).getTypeMap();
       Object.entries(typeMap).forEach(([typeName, namedType]) => {
         if (!typeName.startsWith('__') && namedType != null) {
           // Call visit recursively to let it determine which concrete
@@ -141,7 +137,7 @@ export function visitSchema(
       // methods, if there are no @directive annotations associated with this
       // type, or if this SchemaDirectiveVisitor subclass does not override
       // the visitObject method.
-      const newObject = callMethod('visitObject', type);
+      const newObject: any = callMethod('visitObject', type);
       if (newObject != null) {
         visitFields(newObject);
       }
@@ -149,7 +145,7 @@ export function visitSchema(
     }
 
     if (isInterfaceType(type)) {
-      const newInterface = callMethod('visitInterface', type);
+      const newInterface: any = callMethod('visitInterface', type);
       if (newInterface != null) {
         visitFields(newInterface);
       }
@@ -160,7 +156,7 @@ export function visitSchema(
       const newInputObject = callMethod('visitInputObject', type);
 
       if (newInputObject != null) {
-        const fieldMap: any = newInputObject.getFields() as Record<string, GraphQLInputField>;
+        const fieldMap: any = (newInputObject as any).getFields() as Record<string, any>;
         for (const key of Object.keys(fieldMap)) {
           fieldMap[key] = callMethod('visitInputFieldDefinition', fieldMap[key], {
             // Since we call a different method for input object fields, we
@@ -188,7 +184,7 @@ export function visitSchema(
       let newEnum: any = callMethod('visitEnum', type);
 
       if (newEnum != null) {
-        const newValues: Array<GraphQLEnumValue> = newEnum
+        const newValues: Array<any> = newEnum
           .getValues()
           .map((value: any) =>
             callMethod('visitEnumValue', value, {
@@ -200,8 +196,8 @@ export function visitSchema(
         // Recreate the enum type if any of the values changed
         const valuesUpdated = newValues.some((value, index) => value !== newEnum.getValues()[index]);
         if (valuesUpdated) {
-          newEnum = new GraphQLEnumType({
-            ...(newEnum as GraphQLEnumType).toConfig(),
+          newEnum = new (GraphQLEnumType as any)({
+            ...(newEnum as any).toConfig(),
             values: newValues.reduce(
               (prev, value) => ({
                 ...prev,
@@ -214,7 +210,7 @@ export function visitSchema(
               }),
               {}
             ),
-          }) as GraphQLEnumType & T;
+          }) as typeof GraphQLEnumType & T;
         }
       }
 
@@ -224,7 +220,7 @@ export function visitSchema(
     throw new Error(`Unexpected schema type: ${(type as unknown) as string}`);
   }
 
-  function visitFields(type: GraphQLObjectType | GraphQLInterfaceType) {
+  function visitFields(type: any) {
     const fieldMap = type.getFields();
     for (const [key, field] of Object.entries(fieldMap)) {
       // It would be nice if we could call visit(field) recursively here, but
@@ -276,7 +272,7 @@ export function visitSchema(
   return schema;
 }
 
-function getTypeSpecifiers(type: GraphQLType, schema: GraphQLSchema): Array<VisitSchemaKind> {
+function getTypeSpecifiers(type: any, schema: any): Array<VisitSchemaKind> {
   const specifiers = [VisitSchemaKind.TYPE];
   if (isObjectType(type)) {
     specifiers.push(VisitSchemaKind.COMPOSITE_TYPE, VisitSchemaKind.OBJECT_TYPE);

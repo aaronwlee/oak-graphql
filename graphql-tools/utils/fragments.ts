@@ -1,12 +1,12 @@
-import { InlineFragmentNode, SelectionNode, Kind, parse, OperationDefinitionNode } from "../../deps.ts";
+import { Kind, parse } from "../../deps.ts";
 
-export function concatInlineFragments(type: string, fragments: any): InlineFragmentNode {
-  const fragmentSelections: Array<SelectionNode> = fragments.reduce(
+export function concatInlineFragments(type: string, fragments: any): any {
+  const fragmentSelections: Array<any> = fragments.reduce(
     (selections: any, fragment: any) => selections.concat(fragment.selectionSet.selections),
     []
   );
 
-  const deduplicatedFragmentSelection: Array<SelectionNode> = deduplicateSelection(fragmentSelections);
+  const deduplicatedFragmentSelection: Array<any> = deduplicateSelection(fragmentSelections);
 
   return {
     kind: Kind.INLINE_FRAGMENT,
@@ -24,7 +24,7 @@ export function concatInlineFragments(type: string, fragments: any): InlineFragm
   };
 }
 
-function deduplicateSelection(nodes: Array<SelectionNode>): Array<SelectionNode> {
+function deduplicateSelection(nodes: Array<any>): Array<any> {
   const selectionMap = nodes.reduce((map, node) => {
     switch (node.kind) {
       case 'Field': {
@@ -60,7 +60,7 @@ function deduplicateSelection(nodes: Array<SelectionNode>): Array<SelectionNode>
       }
       case 'InlineFragment': {
         if (map.__fragment != null) {
-          const fragment = map.__fragment as InlineFragmentNode;
+          const fragment = map.__fragment as any;
 
           return {
             ...map,
@@ -87,9 +87,9 @@ function deduplicateSelection(nodes: Array<SelectionNode>): Array<SelectionNode>
   return selection;
 }
 
-export function parseFragmentToInlineFragment(definitions: string): InlineFragmentNode {
+export function parseFragmentToInlineFragment(definitions: string): any {
   if (definitions.trim().startsWith('fragment')) {
-    const document = parse(definitions);
+    const document = (parse as any)(definitions);
     for (const definition of document.definitions) {
       if (definition.kind === Kind.FRAGMENT_DEFINITION) {
         return {
@@ -101,7 +101,7 @@ export function parseFragmentToInlineFragment(definitions: string): InlineFragme
     }
   }
 
-  const query = parse(`{${definitions}}`).definitions[0] as OperationDefinitionNode;
+  const query = (parse as any)(`{${definitions}}`).definitions[0] as any;
   for (const selection of query.selectionSet.selections) {
     if (selection.kind === Kind.INLINE_FRAGMENT) {
       return selection;

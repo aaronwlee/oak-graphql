@@ -1,9 +1,9 @@
-import { GraphQLFieldResolver, defaultFieldResolver, GraphQLSchema } from "../../deps.ts";
+import { defaultFieldResolver, GraphQLSchema } from "../../deps.ts";
 import { mapSchema, MapperKind } from '../utils/index.ts';
 
-function decorateToCatchUndefined(fn: GraphQLFieldResolver<any, any>, hint: string): GraphQLFieldResolver<any, any> {
+function decorateToCatchUndefined(fn: any, hint: string): any {
   const resolve = fn == null ? defaultFieldResolver : fn;
-  return (root, args, ctx, info) => {
+  return (root: any, args: any, ctx: any, info: any) => {
     const result = resolve(root, args, ctx, info);
     if (typeof result === 'undefined') {
       throw new Error(`Resolver for "${hint}" returned undefined`);
@@ -12,7 +12,7 @@ function decorateToCatchUndefined(fn: GraphQLFieldResolver<any, any>, hint: stri
   };
 }
 
-export function addCatchUndefinedToSchema(schema: GraphQLSchema): GraphQLSchema {
+export function addCatchUndefinedToSchema(schema: any): any {
   return mapSchema(schema, {
     [MapperKind.OBJECT_FIELD]: (fieldConfig: any, fieldName: any, typeName: any) => ({
       ...fieldConfig,

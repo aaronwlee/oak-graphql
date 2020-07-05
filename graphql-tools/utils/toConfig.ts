@@ -1,14 +1,5 @@
-import {
-  GraphQLArgument,
-  GraphQLFieldConfigArgumentMap,
-  GraphQLField,
-  GraphQLInputField,
-  GraphQLInputFieldConfig,
-  GraphQLArgumentConfig,
-  GraphQLFieldConfig,
-} from "../../deps.ts";
 
-export function inputFieldToFieldConfig(field: GraphQLInputField): GraphQLInputFieldConfig {
+export function inputFieldToFieldConfig(field: any): any {
   return {
     description: field.description,
     type: field.type,
@@ -18,7 +9,7 @@ export function inputFieldToFieldConfig(field: GraphQLInputField): GraphQLInputF
   };
 }
 
-export function fieldToFieldConfig(field: GraphQLField<any, any>): GraphQLFieldConfig<any, any> {
+export function fieldToFieldConfig(field: any): any {
   return {
     description: field.description,
     type: field.type,
@@ -31,7 +22,7 @@ export function fieldToFieldConfig(field: GraphQLField<any, any>): GraphQLFieldC
   };
 }
 
-export function argsToFieldConfigArgumentMap(args: ReadonlyArray<GraphQLArgument>): GraphQLFieldConfigArgumentMap {
+export function argsToFieldConfigArgumentMap(args: ReadonlyArray<any>): any {
   const newArguments: any = {};
   args.forEach(arg => {
     newArguments[arg.name] = argumentToArgumentConfig(arg);
@@ -40,7 +31,7 @@ export function argsToFieldConfigArgumentMap(args: ReadonlyArray<GraphQLArgument
   return newArguments;
 }
 
-export function argumentToArgumentConfig(arg: GraphQLArgument): GraphQLArgumentConfig {
+export function argumentToArgumentConfig(arg: any): any {
   return {
     description: arg.description,
     type: arg.type,

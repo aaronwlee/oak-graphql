@@ -4,14 +4,10 @@ import {
   GraphQLInterfaceType,
   GraphQLList,
   GraphQLObjectType,
-  GraphQLNamedType,
   GraphQLNonNull,
-  GraphQLType,
   GraphQLUnionType,
   isNamedType,
   GraphQLSchema,
-  GraphQLInputType,
-  GraphQLOutputType,
   isObjectType,
   isInterfaceType,
   isUnionType,
@@ -51,19 +47,19 @@ import { TypeMap } from './Interfaces.ts';
 // They were briefly taken in v5, but can now be phased out as they were only required when other
 // areas of the codebase were using healSchema and visitSchema more extensively.
 //
-export function healSchema(schema: GraphQLSchema): GraphQLSchema {
+export function healSchema(schema: any): any {
   healTypes(schema.getTypeMap(), schema.getDirectives());
   return schema;
 }
 
 export function healTypes(
-  originalTypeMap: Record<string, GraphQLNamedType | null>,
-  directives: ReadonlyArray<GraphQLDirective>,
+  originalTypeMap: Record<string, any | null>,
+  directives: ReadonlyArray<any>,
   config: {
     skipPruning: boolean;
   } = {
-    skipPruning: false,
-  }
+      skipPruning: false,
+    }
 ) {
   const actualNamedTypeMap: TypeMap = Object.create(null);
 
@@ -98,9 +94,9 @@ export function healTypes(
   });
 
   // Directive declaration argument types can refer to named types.
-  directives.forEach((decl: GraphQLDirective) => {
-    decl.args = decl.args.filter(arg => {
-      arg.type = healType(arg.type) as GraphQLInputType;
+  directives.forEach((decl: any) => {
+    decl.args = decl.args.filter((arg: any) => {
+      arg.type = healType(arg.type) as any;
       return arg.type !== null;
     });
   });
@@ -124,7 +120,7 @@ export function healTypes(
     pruneTypes(originalTypeMap, directives);
   }
 
-  function healNamedType(type: GraphQLNamedType) {
+  function healNamedType(type: any) {
     if (isObjectType(type)) {
       healFields(type);
       healInterfaces(type);
@@ -148,62 +144,62 @@ export function healTypes(
     throw new Error(`Unexpected schema type: ${type as string}`);
   }
 
-  function healFields(type: GraphQLObjectType | GraphQLInterfaceType) {
+  function healFields(type: any) {
     const fieldMap = type.getFields();
     for (const [key, field] of Object.entries(fieldMap)) {
-      field.args
-        .map(arg => {
-          arg.type = healType(arg.type) as GraphQLInputType;
+      (field as any).args
+        .map((arg: any) => {
+          arg.type = healType(arg.type) as any;
           return arg.type === null ? null : arg;
         })
         .filter(Boolean);
-      field.type = healType(field.type) as GraphQLOutputType;
-      if (field.type === null) {
+      (field as any).type = healType((field as any).type) as any;
+      if ((field as any).type === null) {
         delete fieldMap[key];
       }
     }
   }
 
-  function healInterfaces(type: GraphQLObjectType | GraphQLInterfaceType) {
+  function healInterfaces(type: any) {
     if ('getInterfaces' in type) {
       const interfaces = type.getInterfaces();
       interfaces.push(
         ...interfaces
           .splice(0)
-          .map(iface => healType(iface) as any)
+          .map((iface: any) => healType(iface) as any)
           .filter(Boolean)
       );
     }
   }
 
-  function healInputFields(type: GraphQLInputObjectType) {
+  function healInputFields(type: any) {
     const fieldMap = type.getFields();
     for (const [key, field] of Object.entries(fieldMap)) {
-      field.type = healType(field.type) as GraphQLInputType;
-      if (field.type === null) {
+      (field as any).type = healType((field as any).type) as any;
+      if ((field as any).type === null) {
         delete fieldMap[key];
       }
     }
   }
 
-  function healUnderlyingTypes(type: GraphQLUnionType) {
+  function healUnderlyingTypes(type: any) {
     const types = type.getTypes();
     types.push(
       ...types
         .splice(0)
-        .map(t => healType(t) as any)
+        .map((t: any) => healType(t) as any)
         .filter(Boolean)
     );
   }
 
-  function healType<T extends GraphQLType>(type: T): GraphQLType | null {
+  function healType<T extends any>(type: T): any {
     // Unwrap the two known wrapper types
     if (isListType(type)) {
-      const healedType = healType(type.ofType);
-      return healedType != null ? new GraphQLList(healedType) : null;
+      const healedType = healType((type as any).ofType);
+      return healedType != null ? new (GraphQLList as any)(healedType) : null;
     } else if (isNonNullType(type)) {
-      const healedType = healType(type.ofType);
-      return healedType != null ? new GraphQLNonNull(healedType) : null;
+      const healedType = healType((type as any).ofType);
+      return healedType != null ? new (GraphQLNonNull as any)(healedType) : null;
     } else if (isNamedType(type)) {
       // If a type annotation on a field or an argument or a union member is
       // any `GraphQLNamedType` with a `name`, then it must end up identical
@@ -211,7 +207,7 @@ export function healTypes(
       // of truth for all named schema types.
       // Note that new types can still be simply added by adding a field, as
       // the official type will be undefined, not null.
-      const officialType = originalTypeMap[type.name];
+      const officialType = originalTypeMap[(type as any).name];
       if (officialType && type !== officialType) {
         return officialType as T;
       }
@@ -220,7 +216,7 @@ export function healTypes(
   }
 }
 
-function pruneTypes(typeMap: Record<string, GraphQLNamedType | null>, directives: ReadonlyArray<GraphQLDirective>) {
+function pruneTypes(typeMap: Record<string, any | null>, directives: ReadonlyArray<any>) {
   const implementedInterfaces: any = {};
   Object.values(typeMap).forEach((namedType: any) => {
     if ('getInterfaces' in namedType) {

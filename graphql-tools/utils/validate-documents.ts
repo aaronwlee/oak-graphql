@@ -4,27 +4,25 @@ import {
   GraphQLSchema,
   GraphQLError,
   specifiedRules,
-  FragmentDefinitionNode,
   ValidationContext,
-  ASTVisitor,
 } from "../../deps.ts";
 import { Source } from './loaders.ts';
 import { CombinedError } from './errors.ts';
 
-export type ValidationRule = (context: ValidationContext) => ASTVisitor;
+export type ValidationRule = (context: any) => any;
 const DEFAULT_EFFECTIVE_RULES = createDefaultRules();
 
 export interface LoadDocumentError {
   readonly filePath: string;
-  readonly errors: ReadonlyArray<GraphQLError>;
+  readonly errors: ReadonlyArray<any>;
 }
 
 export async function validateGraphQlDocuments(
-  schema: GraphQLSchema,
+  schema: any,
   documentFiles: Source[],
   effectiveRules: ValidationRule[] = DEFAULT_EFFECTIVE_RULES
 ): Promise<ReadonlyArray<LoadDocumentError>> {
-  const allFragments: FragmentDefinitionNode[] = [];
+  const allFragments: any[] = [];
 
   documentFiles.forEach(documentFile => {
     if (documentFile.document) {
@@ -58,7 +56,7 @@ export async function validateGraphQlDocuments(
         }),
       };
 
-      const errors = validate(schema, documentToValidate, effectiveRules);
+      const errors = (validate as any)(schema, documentToValidate, effectiveRules);
 
       if (errors.length > 0) {
         allErrors.push({

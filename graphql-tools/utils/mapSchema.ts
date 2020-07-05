@@ -1,22 +1,15 @@
 import {
   GraphQLDirective,
   GraphQLObjectType,
-  GraphQLNamedType,
   GraphQLSchema,
-  GraphQLType,
   isInterfaceType,
   isEnumType,
   isObjectType,
   isScalarType,
   isUnionType,
   isInputObjectType,
-  GraphQLFieldConfig,
   GraphQLInputObjectType,
   GraphQLInterfaceType,
-  GraphQLInputFieldConfig,
-  GraphQLObjectTypeConfig,
-  GraphQLInterfaceTypeConfig,
-  GraphQLInputObjectTypeConfig,
   isLeafType,
   isListType,
   isNonNullType,
@@ -41,7 +34,7 @@ import {
 import { rewireTypes } from './rewire.ts';
 import { serializeInputValue, parseInputValue } from './transformInputValue.ts';
 
-export function mapSchema(schema: GraphQLSchema, schemaMapper: SchemaMapper = {}): GraphQLSchema {
+export function mapSchema(schema: any, schemaMapper: SchemaMapper = {}): any {
   const originalTypeMap = schema.getTypeMap();
 
   let newTypeMap = mapDefaultValues(originalTypeMap, schema, serializeInputValue);
@@ -77,11 +70,11 @@ export function mapSchema(schema: GraphQLSchema, schemaMapper: SchemaMapper = {}
 
   const { typeMap, directives } = rewireTypes(newTypeMap, newDirectives);
 
-  return new GraphQLSchema({
+  return new (GraphQLSchema as any)({
     ...schema.toConfig(),
-    query: newQueryTypeName ? (typeMap[newQueryTypeName] as GraphQLObjectType) : undefined,
-    mutation: newMutationTypeName ? (typeMap[newMutationTypeName] as GraphQLObjectType) : undefined,
-    subscription: newSubscriptionTypeName != null ? (typeMap[newSubscriptionTypeName] as GraphQLObjectType) : undefined,
+    query: newQueryTypeName ? (typeMap[newQueryTypeName] as any) : undefined,
+    mutation: newMutationTypeName ? (typeMap[newMutationTypeName] as any) : undefined,
+    subscription: newSubscriptionTypeName != null ? (typeMap[newSubscriptionTypeName] as any) : undefined,
     types: Object.keys(typeMap).map(typeName => typeMap[typeName]),
     directives,
   });
@@ -89,9 +82,9 @@ export function mapSchema(schema: GraphQLSchema, schemaMapper: SchemaMapper = {}
 
 function mapTypes(
   originalTypeMap: TypeMap,
-  schema: GraphQLSchema,
+  schema: any,
   schemaMapper: SchemaMapper,
-  testFn: (originalType: GraphQLNamedType) => boolean = () => true
+  testFn: (originalType: any) => boolean = () => true
 ): TypeMap {
   const newTypeMap: any = {};
 
@@ -125,7 +118,7 @@ function mapTypes(
   return newTypeMap;
 }
 
-function mapEnumValues(originalTypeMap: TypeMap, schema: GraphQLSchema, schemaMapper: SchemaMapper): TypeMap {
+function mapEnumValues(originalTypeMap: TypeMap, schema: any, schemaMapper: SchemaMapper): TypeMap {
   const enumValueMapper = getEnumValueMapper(schemaMapper);
   if (!enumValueMapper) {
     return originalTypeMap;
@@ -135,7 +128,7 @@ function mapEnumValues(originalTypeMap: TypeMap, schema: GraphQLSchema, schemaMa
     originalTypeMap,
     schema,
     {
-      [MapperKind.ENUM_TYPE]: type => {
+      [MapperKind.ENUM_TYPE]: (type: any) => {
         const config = type.toConfig();
         const originalEnumValueConfigMap = config.values;
         const newEnumValueConfigMap: any = {};
@@ -151,7 +144,7 @@ function mapEnumValues(originalTypeMap: TypeMap, schema: GraphQLSchema, schemaMa
             newEnumValueConfigMap[enumValueName] = mappedEnumValue;
           }
         });
-        return new GraphQLEnumType({
+        return new (GraphQLEnumType as any)({
           ...config,
           values: newEnumValueConfigMap,
         });
@@ -161,7 +154,7 @@ function mapEnumValues(originalTypeMap: TypeMap, schema: GraphQLSchema, schemaMa
   );
 }
 
-function mapDefaultValues(originalTypeMap: TypeMap, schema: GraphQLSchema, fn: IDefaultValueIteratorFn): TypeMap {
+function mapDefaultValues(originalTypeMap: TypeMap, schema: any, fn: IDefaultValueIteratorFn): TypeMap {
   const newTypeMap = mapArguments(originalTypeMap, schema, {
     [MapperKind.ARGUMENT]: argumentConfig => {
       if (argumentConfig.defaultValue === undefined) {
@@ -195,22 +188,22 @@ function mapDefaultValues(originalTypeMap: TypeMap, schema: GraphQLSchema, fn: I
   });
 }
 
-function getNewType<T extends GraphQLType>(newTypeMap: TypeMap, type: T): T | null {
+function getNewType<T extends any>(newTypeMap: TypeMap, type: T): T | null {
   if (isListType(type)) {
-    const newType = getNewType(newTypeMap, type.ofType);
-    return newType != null ? (new GraphQLList(newType) as T) : null;
+    const newType = getNewType(newTypeMap, (type as any).ofType);
+    return newType != null ? (new (GraphQLList as any)(newType) as T) : null;
   } else if (isNonNullType(type)) {
-    const newType = getNewType(newTypeMap, type.ofType);
-    return newType != null ? (new GraphQLNonNull(newType) as T) : null;
+    const newType = getNewType(newTypeMap, (type as any).ofType);
+    return newType != null ? (new (GraphQLNonNull as any)(newType) as T) : null;
   } else if (isNamedType(type)) {
-    const newType = newTypeMap[type.name];
+    const newType = newTypeMap[(type as any).name];
     return newType != null ? (newType as T) : null;
   }
 
   return null;
 }
 
-function mapFields(originalTypeMap: TypeMap, schema: GraphQLSchema, schemaMapper: SchemaMapper): TypeMap {
+function mapFields(originalTypeMap: TypeMap, schema: any, schemaMapper: SchemaMapper): TypeMap {
   const newTypeMap: any = {};
 
   Object.keys(originalTypeMap).forEach(typeName => {
@@ -246,18 +239,18 @@ function mapFields(originalTypeMap: TypeMap, schema: GraphQLSchema, schemaMapper
       });
 
       if (isObjectType(originalType)) {
-        newTypeMap[typeName] = new GraphQLObjectType({
-          ...((config as unknown) as GraphQLObjectTypeConfig<any, any>),
+        newTypeMap[typeName] = new (GraphQLObjectType as any)({
+          ...((config as unknown) as any),
           fields: newFieldConfigMap,
         });
       } else if (isInterfaceType(originalType)) {
-        newTypeMap[typeName] = new GraphQLInterfaceType({
-          ...((config as unknown) as GraphQLInterfaceTypeConfig<any, any>),
+        newTypeMap[typeName] = new (GraphQLInterfaceType as any)({
+          ...((config as unknown) as any),
           fields: newFieldConfigMap,
         });
       } else {
-        newTypeMap[typeName] = new GraphQLInputObjectType({
-          ...((config as unknown) as GraphQLInputObjectTypeConfig),
+        newTypeMap[typeName] = new (GraphQLInputObjectType as any)({
+          ...((config as unknown) as any),
           fields: newFieldConfigMap,
         });
       }
@@ -267,7 +260,7 @@ function mapFields(originalTypeMap: TypeMap, schema: GraphQLSchema, schemaMapper
   return newTypeMap;
 }
 
-function mapArguments(originalTypeMap: TypeMap, schema: GraphQLSchema, schemaMapper: SchemaMapper): TypeMap {
+function mapArguments(originalTypeMap: TypeMap, schema: any, schemaMapper: SchemaMapper): TypeMap {
   const newTypeMap: any = {};
 
   Object.keys(originalTypeMap).forEach(typeName => {
@@ -328,18 +321,18 @@ function mapArguments(originalTypeMap: TypeMap, schema: GraphQLSchema, schemaMap
       });
 
       if (isObjectType(originalType)) {
-        newTypeMap[typeName] = new GraphQLObjectType({
-          ...((config as unknown) as GraphQLObjectTypeConfig<any, any>),
+        newTypeMap[typeName] = new (GraphQLObjectType as any)({
+          ...((config as unknown) as any),
           fields: newFieldConfigMap,
         });
       } else if (isInterfaceType(originalType)) {
-        newTypeMap[typeName] = new GraphQLInterfaceType({
-          ...((config as unknown) as GraphQLInterfaceTypeConfig<any, any>),
+        newTypeMap[typeName] = new (GraphQLInterfaceType as any)({
+          ...((config as unknown) as any),
           fields: newFieldConfigMap,
         });
       } else {
-        newTypeMap[typeName] = new GraphQLInputObjectType({
-          ...((config as unknown) as GraphQLInputObjectTypeConfig),
+        newTypeMap[typeName] = new (GraphQLInputObjectType as any)({
+          ...((config as unknown) as any),
           fields: newFieldConfigMap,
         });
       }
@@ -350,16 +343,16 @@ function mapArguments(originalTypeMap: TypeMap, schema: GraphQLSchema, schemaMap
 }
 
 function mapDirectives(
-  originalDirectives: ReadonlyArray<GraphQLDirective>,
-  schema: GraphQLSchema,
+  originalDirectives: ReadonlyArray<any>,
+  schema: any,
   schemaMapper: SchemaMapper
-): Array<GraphQLDirective> {
+): Array<any> {
   const directiveMapper = getDirectiveMapper(schemaMapper);
   if (directiveMapper == null) {
     return originalDirectives.slice();
   }
 
-  const newDirectives: Array<GraphQLDirective> = [];
+  const newDirectives: Array<any> = [];
 
   originalDirectives.forEach(directive => {
     const mappedDirective = directiveMapper(directive, schema);
@@ -373,7 +366,7 @@ function mapDirectives(
   return newDirectives;
 }
 
-function getTypeSpecifiers(schema: GraphQLSchema, typeName: string): Array<MapperKind> {
+function getTypeSpecifiers(schema: any, typeName: string): Array<MapperKind> {
   const type = schema.getType(typeName);
   const specifiers = [MapperKind.TYPE];
 
@@ -404,7 +397,7 @@ function getTypeSpecifiers(schema: GraphQLSchema, typeName: string): Array<Mappe
   return specifiers;
 }
 
-function getTypeMapper(schema: GraphQLSchema, schemaMapper: SchemaMapper, typeName: string): NamedTypeMapper | null {
+function getTypeMapper(schema: any, schemaMapper: SchemaMapper, typeName: string): NamedTypeMapper | null {
   const specifiers = getTypeSpecifiers(schema, typeName);
   let typeMapper: NamedTypeMapper | undefined;
   const stack = [...specifiers];
@@ -416,7 +409,7 @@ function getTypeMapper(schema: GraphQLSchema, schemaMapper: SchemaMapper, typeNa
   return typeMapper != null ? typeMapper : null;
 }
 
-function getFieldSpecifiers(schema: GraphQLSchema, typeName: string): Array<MapperKind> {
+function getFieldSpecifiers(schema: any, typeName: string): Array<MapperKind> {
   const type = schema.getType(typeName);
   const specifiers = [MapperKind.FIELD];
 
@@ -441,8 +434,8 @@ function getFieldSpecifiers(schema: GraphQLSchema, typeName: string): Array<Mapp
   return specifiers;
 }
 
-function getFieldMapper<F extends GraphQLFieldConfig<any, any> | GraphQLInputFieldConfig>(
-  schema: GraphQLSchema,
+function getFieldMapper<F extends any | any>(
+  schema: any,
   schemaMapper: SchemaMapper,
   typeName: string
 ): GenericFieldMapper<F> | null {

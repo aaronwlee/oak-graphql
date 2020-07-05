@@ -1,5 +1,3 @@
-import { GraphQLFieldResolver } from "../../deps.ts";
-
 import { mergeDeep, SchemaDirectiveVisitor } from '../utils/index.ts';
 import { addResolversToSchema } from './addResolversToSchema.ts';
 
@@ -59,7 +57,7 @@ export function makeExecutableSchema<TContext = any>({
   if (typeof (resolvers as any)['__schema'] === 'function') {
     // TODO a bit of a hack now, better rewrite generateSchema to attach it there.
     // not doing that now, because I'd have to rewrite a lot of tests.
-    schema = addSchemaLevelResolver(schema, (resolvers as any)['__schema'] as GraphQLFieldResolver<any, any>);
+    schema = addSchemaLevelResolver(schema, (resolvers as any)['__schema'] as any);
   }
 
   schemaTransforms.forEach(schemaTransform => {

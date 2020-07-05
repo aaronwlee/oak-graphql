@@ -1,8 +1,6 @@
 import {
   GraphQLDirective,
   GraphQLSchema,
-  DirectiveLocationEnum,
-  TypeSystemExtensionNode,
   valueFromASTUntyped,
 } from "../../deps.ts";
 
@@ -84,8 +82,8 @@ export class SchemaDirectiveVisitor<TArgs = any, TContext = any> extends SchemaV
   // appear. By default, any declaration found in the schema will be returned.
   public static getDirectiveDeclaration(
     directiveName: string,
-    schema: GraphQLSchema
-  ): GraphQLDirective | null | undefined {
+    schema: any
+  ): any | null | undefined {
     return schema.getDirective(directiveName);
   }
 
@@ -93,7 +91,7 @@ export class SchemaDirectiveVisitor<TArgs = any, TContext = any> extends SchemaV
   // @directive in the schema and create an appropriate SchemaDirectiveVisitor
   // instance to visit the object decorated by the @directive.
   public static visitSchemaDirectives(
-    schema: GraphQLSchema,
+    schema: any,
     // The keys of this object correspond to directive names as they appear
     // in the schema, and the values should be subclasses (not instances!)
     // of the SchemaDirectiveVisitor class. This distinction is important
@@ -116,7 +114,7 @@ export class SchemaDirectiveVisitor<TArgs = any, TContext = any> extends SchemaV
 
     // Map from directive names to lists of SchemaDirectiveVisitor instances
     // created while visiting the schema.
-    const createdVisitors: Record<string, Array<any>> = Object.keys(directiveVisitors).reduce(
+    const createdVisitors: any = Object.keys(directiveVisitors).reduce(
       (prev, item) => ({
         ...prev,
         [item]: [],
@@ -124,7 +122,7 @@ export class SchemaDirectiveVisitor<TArgs = any, TContext = any> extends SchemaV
       {}
     );
 
-    const directiveVisitorMap: Record<string, typeof SchemaDirectiveVisitor> = Object.entries(directiveVisitors).reduce(
+    const directiveVisitorMap: any = Object.entries(directiveVisitors).reduce(
       (prev, [key, value]) => ({
         ...prev,
         [key]: value,
@@ -136,7 +134,7 @@ export class SchemaDirectiveVisitor<TArgs = any, TContext = any> extends SchemaV
       let directiveNodes = type?.astNode?.directives ?? [];
 
       const extensionASTNodes: any = (type as {
-        extensionASTNodes?: Array<TypeSystemExtensionNode>;
+        extensionASTNodes?: Array<any>;
       }).extensionASTNodes;
 
       if (extensionASTNodes != null) {
@@ -176,7 +174,7 @@ export class SchemaDirectiveVisitor<TArgs = any, TContext = any> extends SchemaV
           args = Object.create(null);
           if (directiveNode.arguments != null) {
             directiveNode.arguments.forEach((arg: any) => {
-              args[arg.name.value] = valueFromASTUntyped(arg.value);
+              args[arg.name.value] = (valueFromASTUntyped as any)(arg.value);
             });
           }
         }
@@ -212,11 +210,11 @@ export class SchemaDirectiveVisitor<TArgs = any, TContext = any> extends SchemaV
   }
 
   protected static getDeclaredDirectives(
-    schema: GraphQLSchema,
+    schema: any,
     directiveVisitors: Record<string, SchemaDirectiveVisitorClass>
-  ): Record<string, GraphQLDirective> {
-    const declaredDirectives: Record<string, GraphQLDirective> = schema.getDirectives().reduce(
-      (prev, curr) => ({
+  ): Record<string, any> {
+    const declaredDirectives: Record<string, any> = schema.getDirectives().reduce(
+      (prev: any, curr: any) => ({
         ...prev,
         [curr.name]: curr,
       }),
@@ -244,7 +242,7 @@ export class SchemaDirectiveVisitor<TArgs = any, TContext = any> extends SchemaV
       }
       const visitorClass = directiveVisitors[name];
 
-      decl.locations.forEach(loc => {
+      (decl as any).locations.forEach((loc: any) => {
         const visitorMethodName = directiveLocationToVisitorMethodName(loc);
         if (
           SchemaVisitor.implementsVisitorMethod(visitorMethodName) &&
@@ -268,7 +266,7 @@ export class SchemaDirectiveVisitor<TArgs = any, TContext = any> extends SchemaV
     name: string;
     args: TArgs;
     visitedType: VisitableSchemaType;
-    schema: GraphQLSchema;
+    schema: any;
     context: TContext;
   }) {
     super();
@@ -281,10 +279,10 @@ export class SchemaDirectiveVisitor<TArgs = any, TContext = any> extends SchemaV
 }
 
 // Convert a string like "FIELD_DEFINITION" to "visitFieldDefinition".
-function directiveLocationToVisitorMethodName(loc: DirectiveLocationEnum) {
+function directiveLocationToVisitorMethodName(loc: any) {
   return (
     'visit' +
-    loc.replace(/([^_]*)_?/g, (_wholeMatch, part: string) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    loc.replace(/([^_]*)_?/g, (_wholeMatch: any, part: string) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
   );
 }
 

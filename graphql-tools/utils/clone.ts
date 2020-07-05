@@ -4,7 +4,6 @@ import {
   GraphQLInputObjectType,
   GraphQLInterfaceType,
   GraphQLObjectType,
-  GraphQLNamedType,
   GraphQLScalarType,
   GraphQLSchema,
   GraphQLUnionType,
@@ -20,14 +19,14 @@ import {
 
 import { mapSchema } from './mapSchema.ts';
 
-export function cloneDirective(directive: GraphQLDirective): GraphQLDirective {
-  return isSpecifiedDirective(directive) ? directive : new GraphQLDirective(directive.toConfig());
+export function cloneDirective(directive: any): any {
+  return isSpecifiedDirective(directive) ? directive : new (GraphQLDirective as any)(directive.toConfig());
 }
 
-export function cloneType(type: GraphQLNamedType): GraphQLNamedType {
+export function cloneType(type: any): any {
   if (isObjectType(type)) {
     const config = type.toConfig();
-    return new GraphQLObjectType({
+    return new (GraphQLObjectType as any)({
       ...config,
       interfaces: typeof config.interfaces === 'function' ? config.interfaces : config.interfaces.slice(),
     });
@@ -37,24 +36,24 @@ export function cloneType(type: GraphQLNamedType): GraphQLNamedType {
       ...config,
       interfaces: [...((typeof config.interfaces === 'function' ? config.interfaces() : config.interfaces) || [])],
     };
-    return new GraphQLInterfaceType(newConfig);
+    return new (GraphQLInterfaceType as any)(newConfig);
   } else if (isUnionType(type)) {
     const config = type.toConfig();
-    return new GraphQLUnionType({
+    return new (GraphQLUnionType as any)({
       ...config,
       types: config.types.slice(),
     });
   } else if (isInputObjectType(type)) {
-    return new GraphQLInputObjectType(type.toConfig());
+    return new (GraphQLInputObjectType as any)(type.toConfig());
   } else if (isEnumType(type)) {
-    return new GraphQLEnumType(type.toConfig());
+    return new (GraphQLEnumType as any)(type.toConfig());
   } else if (isScalarType(type)) {
-    return isSpecifiedScalarType(type) ? type : new GraphQLScalarType(type.toConfig());
+    return isSpecifiedScalarType(type) ? type : new (GraphQLScalarType as any)(type.toConfig());
   }
 
   throw new Error(`Invalid type ${type as string}`);
 }
 
-export function cloneSchema(schema: GraphQLSchema): GraphQLSchema {
+export function cloneSchema(schema: any): any {
   return mapSchema(schema);
 }

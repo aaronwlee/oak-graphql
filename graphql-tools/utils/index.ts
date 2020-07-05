@@ -1,6 +1,5 @@
 export * from './loaders.ts';
 export * from './helpers.ts';
-export * from './debug-log.ts';
 export * from './fix-windows-path.ts';
 export * from './flatten-array.ts';
 export * from './get-directives.ts';
@@ -14,7 +13,6 @@ export * from './parse-graphql-json.ts';
 export * from './parse-graphql-sdl.ts';
 export * from './get-user-types-from-schema.ts';
 export * from './create-schema-definition.ts';
-export * from './build-operation-for-field.ts';
 export * from './types.ts';
 export * from './filterSchema.ts';
 export * from './clone.ts';

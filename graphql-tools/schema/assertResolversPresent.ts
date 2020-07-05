@@ -1,9 +1,9 @@
-import { GraphQLSchema, GraphQLField, getNamedType, isScalarType } from "../../deps.ts";
+import { GraphQLSchema, getNamedType, isScalarType } from "../../deps.ts";
 
 import { IResolverValidationOptions, forEachField } from '../utils/index.ts';
 
 export function assertResolversPresent(
-  schema: GraphQLSchema,
+  schema: any,
   resolverValidationOptions: IResolverValidationOptions = {}
 ): void {
   const {
@@ -38,7 +38,7 @@ export function assertResolversPresent(
   });
 }
 
-function expectResolver(field: GraphQLField<any, any>, typeName: string, fieldName: string) {
+function expectResolver(field: any, typeName: string, fieldName: string) {
   if (!field.resolve) {
     // eslint-disable-next-line no-console
     console.warn(

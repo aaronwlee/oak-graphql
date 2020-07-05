@@ -2,8 +2,8 @@ import { GraphQLError } from "../../deps.ts";
 
 export const ERROR_SYMBOL = Symbol('subschemaErrors');
 
-export function relocatedError(originalError: GraphQLError, path: any): GraphQLError {
-  return new GraphQLError(
+export function relocatedError(originalError: any, path: any): any {
+  return new (GraphQLError as any)(
     originalError.message,
     originalError.nodes,
     originalError.source,
@@ -14,11 +14,11 @@ export function relocatedError(originalError: GraphQLError, path: any): GraphQLE
   );
 }
 
-export function slicedError(originalError: GraphQLError) {
+export function slicedError(originalError: any) {
   return relocatedError(originalError, originalError.path != null ? originalError.path.slice(1) : undefined);
 }
 
-export function getErrorsByPathSegment(errors: ReadonlyArray<GraphQLError>): Record<string, Array<GraphQLError>> {
+export function getErrorsByPathSegment(errors: ReadonlyArray<any>): Record<string, Array<any>> {
   const record = Object.create(null);
   errors.forEach(error => {
     if (!error.path || error.path.length < 2) {
@@ -35,7 +35,7 @@ export function getErrorsByPathSegment(errors: ReadonlyArray<GraphQLError>): Rec
   return record;
 }
 
-export class CombinedError extends GraphQLError {
+export class CombinedError extends (GraphQLError as any) {
   public errors: ReadonlyArray<Error>;
   constructor(errors: ReadonlyArray<Error>) {
     const message = errors.map(error => error.message).join('\n');
@@ -51,11 +51,11 @@ export class CombinedError extends GraphQLError {
   }
 }
 
-export function setErrors(result: any, errors: Array<GraphQLError>) {
+export function setErrors(result: any, errors: Array<any>) {
   result[ERROR_SYMBOL] = errors;
 }
 
-export function getErrors(result: any, pathSegment: string): Array<GraphQLError> | null {
+export function getErrors(result: any, pathSegment: string): Array<any> | null {
   const errors = result != null ? result[ERROR_SYMBOL] : result;
 
   if (!Array.isArray(errors)) {

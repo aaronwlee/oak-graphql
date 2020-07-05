@@ -2,23 +2,16 @@ import {
   GraphQLSchema,
   print,
   printType,
-  GraphQLNamedType,
   Kind,
-  ObjectTypeExtensionNode,
   isSpecifiedScalarType,
   isIntrospectionType,
   isScalarType,
   parse,
-  TypeDefinitionNode,
-  DirectiveNode,
-  FieldDefinitionNode,
-  InputValueDefinitionNode,
-  EnumValueDefinitionNode,
 } from "../../deps.ts";
 import { SchemaPrintOptions } from './types.ts';
 import { createSchemaDefinition } from './create-schema-definition.ts';
 
-export function printSchemaWithDirectives(schema: GraphQLSchema, _options: SchemaPrintOptions = {}): string {
+export function printSchemaWithDirectives(schema: any, _options: SchemaPrintOptions = {}): string {
   const typesMap = schema.getTypeMap();
 
   const result: any = [getSchemaDefinition(schema)];
@@ -52,7 +45,7 @@ function extendDefinition(type: any): any {
       return {
         ...type.astNode,
         fields: type.astNode.fields.concat(
-          (type.extensionASTNodes as ReadonlyArray<ObjectTypeExtensionNode>).reduce(
+          (type.extensionASTNodes as ReadonlyArray<any>).reduce(
             (fields, node: any) => fields.concat(node.fields),
             []
           )
@@ -62,7 +55,7 @@ function extendDefinition(type: any): any {
       return {
         ...type.astNode,
         fields: type.astNode.fields.concat(
-          (type.extensionASTNodes as ReadonlyArray<ObjectTypeExtensionNode>).reduce(
+          (type.extensionASTNodes as ReadonlyArray<any>).reduce(
             (fields, node: any) => fields.concat(node.fields),
             []
           )
@@ -73,7 +66,7 @@ function extendDefinition(type: any): any {
   }
 }
 
-function correctType<TMap extends { [key: string]: GraphQLNamedType }, TName extends keyof TMap>(
+function correctType<TMap extends { [key: string]: any }, TName extends keyof TMap>(
   typeName: TName,
   typesMap: TMap
 ): any {
@@ -84,33 +77,30 @@ function correctType<TMap extends { [key: string]: GraphQLNamedType }, TName ext
   if (type.astNode && type.extensionASTNodes) {
     type.astNode = type.extensionASTNodes ? extendDefinition(type) : type.astNode;
   }
-  const doc = parse(printType(type));
-  const fixedAstNode: any = doc.definitions[0] as TypeDefinitionNode;
+  const doc: any = (parse as any)((printType as any)(type));
+  const fixedAstNode: any = doc.definitions[0] as any;
   const originalAstNode: any = type?.astNode;
   if (originalAstNode) {
-    (fixedAstNode.directives as DirectiveNode[]) = originalAstNode?.directives as DirectiveNode[];
+    (fixedAstNode.directives as any[]) = originalAstNode?.directives as any[];
     if ('fields' in fixedAstNode && 'fields' in originalAstNode) {
       for (const fieldDefinitionNode of fixedAstNode.fields) {
-        const originalFieldDefinitionNode: any = (originalAstNode.fields as (
-          | InputValueDefinitionNode
-          | FieldDefinitionNode
-        )[]).find(field => field.name.value === fieldDefinitionNode.name.value);
-        (fieldDefinitionNode.directives as DirectiveNode[]) = originalFieldDefinitionNode?.directives as DirectiveNode[];
+        const originalFieldDefinitionNode: any = (originalAstNode.fields as any).find((field: any) => field.name.value === fieldDefinitionNode.name.value);
+        (fieldDefinitionNode.directives as any[]) = originalFieldDefinitionNode?.directives as any[];
         if ('arguments' in fieldDefinitionNode && 'arguments' in originalFieldDefinitionNode) {
           for (const argument of fieldDefinitionNode.arguments) {
-            const originalArgumentNode: any = (originalFieldDefinitionNode as FieldDefinitionNode).arguments?.find(
-              arg => arg.name.value === argument.name.value
+            const originalArgumentNode: any = (originalFieldDefinitionNode as any).arguments?.find(
+              (arg: any) => arg.name.value === argument.name.value
             );
-            (argument.directives as DirectiveNode[]) = originalArgumentNode.directives as DirectiveNode[];
+            (argument.directives as any[]) = originalArgumentNode.directives as any[];
           }
         }
       }
     } else if ('values' in fixedAstNode && 'values' in originalAstNode) {
       for (const valueDefinitionNode of fixedAstNode.values) {
-        const originalValueDefinitionNode = (originalAstNode.values as EnumValueDefinitionNode[]).find(
+        const originalValueDefinitionNode = (originalAstNode.values as any[]).find(
           valueNode => valueNode.name.value === valueDefinitionNode.name.value
         );
-        (valueDefinitionNode.directives as DirectiveNode[]) = originalValueDefinitionNode?.directives as DirectiveNode[];
+        (valueDefinitionNode.directives as any[]) = originalValueDefinitionNode?.directives as any[];
       }
     }
   }
@@ -119,7 +109,7 @@ function correctType<TMap extends { [key: string]: GraphQLNamedType }, TName ext
   return type;
 }
 
-function getSchemaDefinition(schema: GraphQLSchema) {
+function getSchemaDefinition(schema: any) {
   if (!(Object.getOwnPropertyDescriptor(schema, 'astNode') as any).get && schema.astNode) {
     return print(schema.astNode);
   } else {

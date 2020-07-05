@@ -1,61 +1,18 @@
 import {
   GraphQLDirective,
   GraphQLSchema,
-  SchemaDefinitionNode,
-  TypeDefinitionNode,
-  SchemaExtensionNode,
-  TypeExtensionNode,
-  GraphQLNamedType,
-  GraphQLField,
-  GraphQLInputField,
-  FieldDefinitionNode,
-  InputValueDefinitionNode,
-  GraphQLFieldConfig,
-  GraphQLInputFieldConfig,
-  GraphQLSchemaConfig,
-  GraphQLObjectTypeConfig,
-  GraphQLInterfaceTypeConfig,
-  GraphQLUnionTypeConfig,
-  GraphQLScalarTypeConfig,
-  GraphQLEnumTypeConfig,
-  GraphQLInputObjectTypeConfig,
-  GraphQLEnumValue,
-  GraphQLEnumValueConfig,
-  EnumValueDefinitionNode,
 } from "../../deps.ts";
 
 import { getArgumentValues } from './getArgumentValues.ts';
 
 export type DirectiveUseMap = { [key: string]: any };
 
-type SchemaOrTypeNode =
-  | SchemaDefinitionNode
-  | SchemaExtensionNode
-  | TypeDefinitionNode
-  | TypeExtensionNode
-  | EnumValueDefinitionNode
-  | FieldDefinitionNode
-  | InputValueDefinitionNode;
+type SchemaOrTypeNode = any
 
-type DirectableGraphQLObject =
-  | GraphQLSchema
-  | GraphQLSchemaConfig
-  | GraphQLNamedType
-  | GraphQLObjectTypeConfig<any, any>
-  | GraphQLInterfaceTypeConfig<any, any>
-  | GraphQLUnionTypeConfig<any, any>
-  | GraphQLScalarTypeConfig<any, any>
-  | GraphQLEnumTypeConfig
-  | GraphQLEnumValue
-  | GraphQLEnumValueConfig
-  | GraphQLInputObjectTypeConfig
-  | GraphQLField<any, any>
-  | GraphQLInputField
-  | GraphQLFieldConfig<any, any>
-  | GraphQLInputFieldConfig;
+type DirectableGraphQLObject = any
 
-export function getDirectives(schema: GraphQLSchema, node: DirectableGraphQLObject): DirectiveUseMap {
-  const schemaDirectives: ReadonlyArray<GraphQLDirective> =
+export function getDirectives(schema: any, node: DirectableGraphQLObject): DirectiveUseMap {
+  const schemaDirectives: ReadonlyArray<any> =
     schema && schema.getDirectives ? schema.getDirectives() : [];
 
   const schemaDirectiveMap = schemaDirectives.reduce((schemaDirectiveMap: any, schemaDirective: any) => {
@@ -75,7 +32,7 @@ export function getDirectives(schema: GraphQLSchema, node: DirectableGraphQLObje
 
   astNodes.forEach(astNode => {
     if (astNode.directives) {
-      astNode.directives.forEach(directive => {
+      astNode.directives.forEach((directive: any) => {
         const schemaDirective = schemaDirectiveMap[directive.name.value];
         if (schemaDirective) {
           const directiveValue = getDirectiveValues(schemaDirective, astNode);
@@ -98,15 +55,15 @@ export function getDirectives(schema: GraphQLSchema, node: DirectableGraphQLObje
 }
 
 // graphql-js getDirectiveValues does not handle repeatable directives
-function getDirectiveValues(directiveDef: GraphQLDirective, node: SchemaOrTypeNode): any {
+function getDirectiveValues(directiveDef: any, node: SchemaOrTypeNode): any {
   if (node.directives) {
     if (directiveDef.isRepeatable) {
-      const directiveNodes = node.directives.filter(directive => directive.name.value === directiveDef.name);
+      const directiveNodes = node.directives.filter((directive: any) => directive.name.value === directiveDef.name);
 
-      return directiveNodes.map(directiveNode => getArgumentValues(directiveDef, directiveNode));
+      return directiveNodes.map((directiveNode: any) => getArgumentValues(directiveDef, directiveNode));
     }
 
-    const directiveNode: any = node.directives.find(directive => directive.name.value === directiveDef.name);
+    const directiveNode: any = node.directives.find((directive: any) => directive.name.value === directiveDef.name);
 
     return getArgumentValues(directiveDef, directiveNode);
   }

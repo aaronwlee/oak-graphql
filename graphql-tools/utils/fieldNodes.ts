@@ -1,6 +1,6 @@
-import { FieldNode, Kind, FragmentDefinitionNode, SelectionSetNode } from "../../deps.ts";
+import { Kind } from "../../deps.ts";
 
-export function renameFieldNode(fieldNode: FieldNode, name: string): FieldNode {
+export function renameFieldNode(fieldNode: any, name: string): any {
   return {
     ...fieldNode,
     alias: {
@@ -14,7 +14,7 @@ export function renameFieldNode(fieldNode: FieldNode, name: string): FieldNode {
   };
 }
 
-export function preAliasFieldNode(fieldNode: FieldNode, str: string): FieldNode {
+export function preAliasFieldNode(fieldNode: any, str: string): any {
   return {
     ...fieldNode,
     alias: {
@@ -24,7 +24,7 @@ export function preAliasFieldNode(fieldNode: FieldNode, str: string): FieldNode 
   };
 }
 
-export function wrapFieldNode(fieldNode: FieldNode, path: Array<string>): FieldNode {
+export function wrapFieldNode(fieldNode: any, path: Array<string>): any {
   let newFieldNode = fieldNode;
   path.forEach(fieldName => {
     newFieldNode = {
@@ -44,13 +44,13 @@ export function wrapFieldNode(fieldNode: FieldNode, path: Array<string>): FieldN
 }
 
 function collectFields(
-  selectionSet: SelectionSetNode | undefined,
-  fragments: Record<string, FragmentDefinitionNode>,
-  fields: Array<FieldNode> = [],
+  selectionSet: any | undefined,
+  fragments: Record<string, any>,
+  fields: Array<any> = [],
   visitedFragmentNames: any = {}
-): Array<FieldNode> {
+): Array<any> {
   if (selectionSet != null) {
-    selectionSet.selections.forEach(selection => {
+    selectionSet.selections.forEach((selection: any) => {
       switch (selection.kind) {
         case Kind.FIELD:
           fields.push(selection);
@@ -83,21 +83,21 @@ export function hoistFieldNodes({
   delimeter = '__gqltf__',
   fragments,
 }: {
-  fieldNode: FieldNode;
+  fieldNode: any;
   fieldNames?: Array<string>;
   path?: Array<string>;
   delimeter?: string;
-  fragments: Record<string, FragmentDefinitionNode>;
-}): Array<FieldNode> {
+  fragments: Record<string, any>;
+}): Array<any> {
   const alias = fieldNode.alias != null ? fieldNode.alias.value : fieldNode.name.value;
 
-  let newFieldNodes: Array<FieldNode> = [];
+  let newFieldNodes: Array<any> = [];
 
   if (path.length) {
     const remainingPathSegments = path.slice();
     const initialPathSegment = remainingPathSegments.shift();
 
-    collectFields(fieldNode.selectionSet, fragments).forEach((possibleFieldNode: FieldNode) => {
+    collectFields(fieldNode.selectionSet, fragments).forEach((possibleFieldNode: any) => {
       if (possibleFieldNode.name.value === initialPathSegment) {
         newFieldNodes = newFieldNodes.concat(
           hoistFieldNodes({
@@ -111,7 +111,7 @@ export function hoistFieldNodes({
       }
     });
   } else {
-    collectFields(fieldNode.selectionSet, fragments).forEach((possibleFieldNode: FieldNode) => {
+    collectFields(fieldNode.selectionSet, fragments).forEach((possibleFieldNode: any) => {
       if (!fieldNames || fieldNames.includes(possibleFieldNode.name.value)) {
         newFieldNodes.push(preAliasFieldNode(possibleFieldNode, `${alias}${delimeter}`));
       }

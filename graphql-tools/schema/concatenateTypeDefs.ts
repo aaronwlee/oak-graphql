@@ -1,4 +1,4 @@
-import { print, ASTNode } from "../../deps.ts";
+import { print } from "../../deps.ts";
 
 import { ITypedef } from '../utils/index.ts';
 
@@ -12,7 +12,7 @@ export function concatenateTypeDefs(typeDefinitionsAry: Array<ITypedef>, calledF
       }
     } else if (typeof typeDef === 'string') {
       resolvedTypeDefinitions.push(typeDef.trim());
-    } else if ((typeDef as ASTNode).kind !== undefined) {
+    } else if ((typeDef as any).kind !== undefined) {
       resolvedTypeDefinitions.push(print(typeDef).trim());
     } else {
       const type = typeof typeDef;

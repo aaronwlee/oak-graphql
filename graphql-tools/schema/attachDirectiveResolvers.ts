@@ -3,9 +3,9 @@ import { GraphQLSchema, defaultFieldResolver } from "../../deps.ts";
 import { IDirectiveResolvers, mapSchema, MapperKind, getDirectives } from '../utils/index.ts';
 
 export function attachDirectiveResolvers(
-  schema: GraphQLSchema,
+  schema: any,
   directiveResolvers: IDirectiveResolvers
-): GraphQLSchema {
+): any {
   if (typeof directiveResolvers !== 'object') {
     throw new Error(`Expected directiveResolvers to be of type object, got ${typeof directiveResolvers}`);
   }
@@ -24,7 +24,7 @@ export function attachDirectiveResolvers(
           const resolver = directiveResolvers[directiveName];
           const originalResolver = newFieldConfig.resolve != null ? newFieldConfig.resolve : defaultFieldResolver;
           const directiveArgs = directives[directiveName];
-          newFieldConfig.resolve = (source, originalArgs, context, info) => {
+          newFieldConfig.resolve = (source: any, originalArgs: any, context: any, info: any) => {
             return resolver(
               () =>
                 new Promise((resolve, reject) => {

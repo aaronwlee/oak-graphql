@@ -1,4 +1,4 @@
-import { buildClientSchema, parse, ParseOptions } from "../../deps.ts";
+import { buildClientSchema, parse } from "../../deps.ts";
 // import { GraphQLSchemaValidationOptions } from 'graphql/type/schema';
 import { printSchemaWithDirectives } from './print-schema-with-directives.ts';
 import { Source } from './loaders.ts';
@@ -23,7 +23,7 @@ function parseBOM(content: string): any {
 export function parseGraphQLJSON(
   location: string,
   jsonContent: string,
-  options: SchemaPrintOptions & ParseOptions
+  options: SchemaPrintOptions & any
 ): Source {
   let parsedJson = parseBOM(jsonContent);
 

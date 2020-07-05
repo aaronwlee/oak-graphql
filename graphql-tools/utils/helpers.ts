@@ -1,4 +1,4 @@
-import { parse, ASTNode } from "../../deps.ts";
+import { parse } from "../../deps.ts";
 
 export const asArray = <T>(
   fns: T | T[],
@@ -37,7 +37,7 @@ export function isDocumentString(str: string): boolean {
   }
 
   try {
-    parse(str);
+    (parse as any)(str);
     return true;
   } catch (e) {}
 
@@ -61,7 +61,7 @@ export function compareStrings<A, B>(a: A, b: B) {
   return 0;
 }
 
-export function nodeToString(a: ASTNode) {
+export function nodeToString(a: any) {
   if ("alias" in a) {
     return (a as any).alias.value;
   }
@@ -74,8 +74,8 @@ export function nodeToString(a: ASTNode) {
 }
 
 export function compareNodes(
-  a: ASTNode,
-  b: ASTNode,
+  a: any,
+  b: any,
   customFn?: (a: any, b: any) => number,
 ) {
   const aStr = nodeToString(a);

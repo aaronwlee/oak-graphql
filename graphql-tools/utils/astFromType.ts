@@ -1,6 +1,6 @@
-import { isNonNullType, Kind, GraphQLType, TypeNode, isListType } from "../../deps.ts";
+import { isNonNullType, Kind, isListType } from "../../deps.ts";
 
-export function astFromType(type: GraphQLType): TypeNode {
+export function astFromType(type: any): any {
   if (isNonNullType(type)) {
     const innerType = astFromType(type.ofType);
     if (innerType.kind === Kind.NON_NULL_TYPE) {

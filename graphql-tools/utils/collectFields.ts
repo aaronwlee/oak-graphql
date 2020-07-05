@@ -1,14 +1,9 @@
 import {
   GraphQLObjectType,
-  SelectionSetNode,
-  FieldNode,
   Kind,
-  FragmentSpreadNode,
-  InlineFragmentNode,
   getDirectiveValues,
   GraphQLSkipDirective,
   GraphQLIncludeDirective,
-  FragmentDefinitionNode,
   typeFromAST,
   isAbstractType,
 } from "../../deps.ts";
@@ -27,11 +22,11 @@ import { GraphQLExecutionContext } from './Interfaces.ts';
  */
 export function collectFields(
   exeContext: GraphQLExecutionContext,
-  runtimeType: GraphQLObjectType,
-  selectionSet: SelectionSetNode,
-  fields: Record<string, Array<FieldNode>>,
+  runtimeType: any,
+  selectionSet: any,
+  fields: Record<string, Array<any>>,
   visitedFragmentNames: Record<string, boolean>
-): Record<string, Array<FieldNode>> {
+): Record<string, Array<any>> {
   for (const selection of selectionSet.selections) {
     switch (selection.kind) {
       case Kind.FIELD: {
@@ -79,15 +74,15 @@ export function collectFields(
  */
 function shouldIncludeNode(
   exeContext: GraphQLExecutionContext,
-  node: FragmentSpreadNode | FieldNode | InlineFragmentNode
+  node: any
 ): boolean {
-  const skip = getDirectiveValues(GraphQLSkipDirective, node, exeContext.variableValues);
+  const skip: any = getDirectiveValues(GraphQLSkipDirective, node, exeContext.variableValues);
 
   if (skip?.if === true) {
     return false;
   }
 
-  const include = getDirectiveValues(GraphQLIncludeDirective, node, exeContext.variableValues);
+  const include: any = getDirectiveValues(GraphQLIncludeDirective, node, exeContext.variableValues);
 
   if (include?.if === false) {
     return false;
@@ -101,8 +96,8 @@ function shouldIncludeNode(
  */
 function doesFragmentConditionMatch(
   exeContext: GraphQLExecutionContext,
-  fragment: FragmentDefinitionNode | InlineFragmentNode,
-  type: GraphQLObjectType
+  fragment: any,
+  type: any
 ): boolean {
   const typeConditionNode = fragment.typeCondition;
   if (!typeConditionNode) {
@@ -121,7 +116,7 @@ function doesFragmentConditionMatch(
 /**
  * Implements the logic to compute the key of a given field's entry
  */
-function getFieldEntryKey(node: FieldNode): string {
+function getFieldEntryKey(node: any): string {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   return node.alias ? node.alias.value : node.name.value;
 }

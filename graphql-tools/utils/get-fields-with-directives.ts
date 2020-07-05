@@ -1,4 +1,4 @@
-import { DocumentNode, ObjectTypeDefinitionNode, ObjectTypeExtensionNode, ValueNode, Kind } from "../../deps.ts";
+import { Kind } from "../../deps.ts";
 
 export type DirectiveArgs = { [name: string]: any };
 export type DirectiveUsage = { name: string; args: DirectiveArgs };
@@ -6,11 +6,11 @@ export type TypeAndFieldToDirectives = {
   [typeAndField: string]: DirectiveUsage[];
 };
 
-function isObjectTypeDefinitionOrExtension(obj: any): obj is ObjectTypeDefinitionNode | ObjectTypeDefinitionNode {
+function isObjectTypeDefinitionOrExtension(obj: any): obj is any | any {
   return obj && (obj.kind === 'ObjectTypeDefinition' || obj.kind === 'ObjectTypeExtension');
 }
 
-function parseDirectiveValue(value: ValueNode): any {
+function parseDirectiveValue(value: any): any {
   switch (value.kind) {
     case Kind.INT:
       return parseInt(value.value);
@@ -22,9 +22,9 @@ function parseDirectiveValue(value: ValueNode): any {
     case Kind.ENUM:
       return value.value;
     case Kind.LIST:
-      return value.values.map(v => parseDirectiveValue(v));
+      return value.values.map((v: any) => parseDirectiveValue(v));
     case Kind.OBJECT:
-      return value.fields.reduce((prev, v) => ({ ...prev, [v.name.value]: parseDirectiveValue(v.value) }), {});
+      return value.fields.reduce((prev: any, v: any) => ({ ...prev, [v.name.value]: parseDirectiveValue(v.value) }), {});
     case Kind.NULL:
       return null;
     default:
@@ -32,9 +32,9 @@ function parseDirectiveValue(value: ValueNode): any {
   }
 }
 
-export function getFieldsWithDirectives(documentNode: DocumentNode): TypeAndFieldToDirectives {
+export function getFieldsWithDirectives(documentNode: any): TypeAndFieldToDirectives {
   const result: TypeAndFieldToDirectives = {};
-  const allTypes = documentNode.definitions.filter<ObjectTypeDefinitionNode | ObjectTypeExtensionNode>(
+  const allTypes = documentNode.definitions.filter(
     isObjectTypeDefinitionOrExtension
   );
 

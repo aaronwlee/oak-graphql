@@ -1,4 +1,4 @@
-import { parse, extendSchema, buildASTSchema, GraphQLSchema, DocumentNode, ASTNode } from "../../deps.ts";
+import { parse, extendSchema, buildASTSchema, GraphQLSchema, } from "../../deps.ts";
 
 import { ITypeDefinitions, GraphQLParseOptions } from '../utils/index.ts';
 
@@ -8,12 +8,12 @@ import { concatenateTypeDefs } from './concatenateTypeDefs.ts';
 export function buildSchemaFromTypeDefinitions(
   typeDefinitions: ITypeDefinitions,
   parseOptions?: GraphQLParseOptions
-): GraphQLSchema {
+): any {
   const document = buildDocumentFromTypeDefinitions(typeDefinitions, parseOptions);
   const typesAst = filterExtensionDefinitions(document);
 
   const backcompatOptions = { commentDescriptions: true };
-  let schema: GraphQLSchema = buildASTSchema(typesAst, backcompatOptions);
+  let schema: any = buildASTSchema(typesAst, backcompatOptions);
 
   const extensionsAst = extractExtensionDefinitions(document);
   if (extensionsAst.definitions.length > 0) {
@@ -23,15 +23,15 @@ export function buildSchemaFromTypeDefinitions(
   return schema;
 }
 
-export function isDocumentNode(typeDefinitions: ITypeDefinitions): typeDefinitions is DocumentNode {
-  return (typeDefinitions as ASTNode).kind !== undefined;
+export function isDocumentNode(typeDefinitions: ITypeDefinitions): typeDefinitions is any {
+  return (typeDefinitions as any).kind !== undefined;
 }
 
 export function buildDocumentFromTypeDefinitions(
   typeDefinitions: ITypeDefinitions,
   parseOptions?: GraphQLParseOptions
-): DocumentNode {
-  let document: DocumentNode;
+): any {
+  let document: any;
   if (typeof typeDefinitions === 'string') {
     document = parse(typeDefinitions, parseOptions);
   } else if (Array.isArray(typeDefinitions)) {

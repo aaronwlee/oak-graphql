@@ -1,4 +1,4 @@
-import { defaultFieldResolver, GraphQLFieldResolver } from "../../deps.ts";
+import { defaultFieldResolver } from "../../deps.ts";
 import { ILogger } from './types.ts';
 
 /*
@@ -7,10 +7,10 @@ import { ILogger } from './types.ts';
  * hint: an optional hint to add to the error's message
  */
 export function decorateWithLogger(
-  fn: GraphQLFieldResolver<any, any>,
+  fn: any,
   logger: ILogger,
   hint: string
-): GraphQLFieldResolver<any, any> {
+): any {
   const resolver = fn != null ? fn : defaultFieldResolver;
 
   const logError = (e: Error) => {
@@ -25,7 +25,7 @@ export function decorateWithLogger(
     logger.log(newE);
   };
 
-  return (root, args, ctx, info) => {
+  return (root: any, args: any, ctx: any, info: any) => {
     try {
       const result = resolver(root, args, ctx, info);
       // If the resolver returns a Promise log any Promise rejects.

@@ -1,50 +1,13 @@
 import {
   GraphQLSchema,
-  GraphQLField,
-  GraphQLInputType,
-  GraphQLNamedType,
-  GraphQLFieldResolver,
-  GraphQLResolveInfo,
   GraphQLScalarType,
-  DocumentNode,
-  FieldNode,
-  GraphQLEnumValue,
   GraphQLEnumType,
   GraphQLUnionType,
-  GraphQLArgument,
-  GraphQLInputField,
   GraphQLInputObjectType,
   GraphQLInterfaceType,
   GraphQLObjectType,
   GraphQLDirective,
-  FragmentDefinitionNode,
-  SelectionNode,
-  OperationDefinitionNode,
   GraphQLError,
-  ExecutionResult as GraphQLExecutionResult,
-  GraphQLOutputType,
-  FieldDefinitionNode,
-  GraphQLFieldConfig,
-  GraphQLInputFieldConfig,
-  GraphQLArgumentConfig,
-  GraphQLEnumValueConfig,
-  GraphQLScalarSerializer,
-  GraphQLScalarValueParser,
-  GraphQLScalarLiteralParser,
-  ScalarTypeDefinitionNode,
-  ScalarTypeExtensionNode,
-  EnumTypeDefinitionNode,
-  EnumTypeExtensionNode,
-  GraphQLIsTypeOfFn,
-  ObjectTypeDefinitionNode,
-  ObjectTypeExtensionNode,
-  InterfaceTypeExtensionNode,
-  InterfaceTypeDefinitionNode,
-  GraphQLTypeResolver,
-  UnionTypeDefinitionNode,
-  UnionTypeExtensionNode,
-  InputObjectTypeExtensionNode,
-  InputObjectTypeDefinitionNode,
 } from "../../deps.ts";
 
 import { SchemaVisitor } from './SchemaVisitor.ts';
@@ -52,7 +15,7 @@ import { SchemaVisitor } from './SchemaVisitor.ts';
 // graphql-js < v15 backwards compatible ExecutionResult
 // See: https://github.com/graphql/graphql-js/pull/2490
 
-export interface ExecutionResult<TData = Record<string, any>> extends GraphQLExecutionResult {
+export interface ExecutionResult<TData = Record<string, any>> {
   data?: TData | null;
   extensions?: Record<string, any>;
 }
@@ -62,17 +25,17 @@ export type Result = ExecutionResult;
 
 // graphql-js non-exported typings
 
-export type TypeMap = Record<string, GraphQLNamedType>;
+export type TypeMap = Record<string, any>;
 
 export interface GraphQLExecutionContext {
-  schema: GraphQLSchema;
-  fragments: Record<string, FragmentDefinitionNode>;
+  schema: any;
+  fragments: Record<string, any>;
   rootValue: any;
   contextValue: any;
-  operation: OperationDefinitionNode;
+  operation: any;
   variableValues: Record<string, any>;
-  fieldResolver: GraphQLFieldResolver<any, any>;
-  errors: Array<GraphQLError>;
+  fieldResolver: any;
+  errors: Array<any>;
 }
 
 export interface GraphQLParseOptions {
@@ -93,7 +56,7 @@ export interface IResolverValidationOptions {
 }
 
 export interface IAddResolversToSchemaOptions {
-  schema: GraphQLSchema;
+  schema: any;
   resolvers: IResolvers;
   defaultFieldResolver?: IFieldResolver<any, any>;
   resolverValidationOptions?: IResolverValidationOptions;
@@ -101,39 +64,39 @@ export interface IAddResolversToSchemaOptions {
   updateResolversInPlace?: boolean;
 }
 
-export type IScalarTypeResolver = GraphQLScalarType & {
+export type IScalarTypeResolver = any & {
   __name?: string;
   __description?: string;
-  __serialize?: GraphQLScalarSerializer<any>;
-  __parseValue?: GraphQLScalarValueParser<any>;
-  __parseLiteral?: GraphQLScalarLiteralParser<any>;
+  __serialize?: any;
+  __parseValue?: any;
+  __parseLiteral?: any;
   __extensions?: Record<string, any>;
-  __astNode?: ScalarTypeDefinitionNode;
-  __extensionASTNodes?: Array<ScalarTypeExtensionNode>;
+  __astNode?: any;
+  __extensionASTNodes?: Array<any>;
 };
 
 export type IEnumTypeResolver = Record<string, any> & {
   __name?: string;
   __description?: string;
   __extensions?: Record<string, any>;
-  __astNode?: EnumTypeDefinitionNode;
-  __extensionASTNodes?: Array<EnumTypeExtensionNode>;
+  __astNode?: any;
+  __extensionASTNodes?: Array<any>;
 };
 
 export interface IFieldResolverOptions<TSource = any, TContext = any, TArgs = any> {
   name?: string;
   description?: string;
-  type?: GraphQLOutputType;
-  args?: Array<GraphQLArgument>;
+  type?: any;
+  args?: Array<any>;
   resolve?: IFieldResolver<TSource, TContext, TArgs>;
   subscribe?: IFieldResolver<TSource, TContext, TArgs>;
   isDeprecated?: boolean;
   deprecationReason?: string;
   extensions?: Record<string, any>;
-  astNode?: FieldDefinitionNode;
+  astNode?: any;
 }
 
-export type SchemaTransform = (originalSchema: GraphQLSchema) => GraphQLSchema;
+export type SchemaTransform = (originalSchema: any) => any;
 export type RequestTransform = (originalRequest: Request) => Request;
 export type ResultTransform = (originalResult: ExecutionResult) => ExecutionResult;
 
@@ -144,22 +107,22 @@ export interface Transform {
 }
 
 export type FieldNodeMapper = (
-  fieldNode: FieldNode,
-  fragments: Record<string, FragmentDefinitionNode>
-) => SelectionNode | Array<SelectionNode>;
+  fieldNode: any,
+  fragments: Record<string, any>
+) => any | Array<any>;
 
 export type FieldNodeMappers = Record<string, Record<string, FieldNodeMapper>>;
 
 export type FieldFilter = (
   typeName?: string,
   fieldName?: string,
-  fieldConfig?: GraphQLFieldConfig<any, any>
+  fieldConfig?: any
 ) => boolean;
 
 export type RootFieldFilter = (
   operation?: 'Query' | 'Mutation' | 'Subscription',
   rootFieldName?: string,
-  fieldConfig?: GraphQLFieldConfig<any, any>
+  fieldConfig?: any
 ) => boolean;
 
 export type RenameTypesOptions = {
@@ -171,10 +134,10 @@ export type IFieldResolver<TSource, TContext, TArgs = Record<string, any>, TRetu
   source: TSource,
   args: TArgs,
   context: TContext,
-  info: GraphQLResolveInfo
+  info: any
 ) => TReturn;
 
-export type ITypedef = (() => Array<ITypedef>) | string | DocumentNode;
+export type ITypedef = (() => Array<ITypedef>) | string | any;
 
 export type ITypeDefinitions = ITypedef | Array<ITypedef>;
 
@@ -183,10 +146,10 @@ export type IObjectTypeResolver<TSource = any, TContext = any, TArgs = any> = {
 } & {
   __name?: string;
   __description?: string;
-  __isTypeOf?: GraphQLIsTypeOfFn<TSource, TContext>;
+  __isTypeOf?: any;
   __extensions?: Record<string, any>;
-  __astNode?: ObjectTypeDefinitionNode;
-  __extensionASTNodes?: ObjectTypeExtensionNode;
+  __astNode?: any;
+  __extensionASTNodes?: any;
 };
 
 export type IInterfaceTypeResolver<TSource = any, TContext = any, TArgs = any> = {
@@ -194,27 +157,27 @@ export type IInterfaceTypeResolver<TSource = any, TContext = any, TArgs = any> =
 } & {
   __name?: string;
   __description?: string;
-  __resolveType?: GraphQLTypeResolver<any, any>;
+  __resolveType?: any;
   __extensions?: Record<string, any>;
-  __astNode?: InterfaceTypeDefinitionNode;
-  __extensionASTNodes?: Array<InterfaceTypeExtensionNode>;
+  __astNode?: any;
+  __extensionASTNodes?: Array<any>;
 };
 
 export type IUnionTypeResolver = {
   __name?: string;
   __description?: string;
-  __resolveType?: GraphQLTypeResolver<any, any>;
+  __resolveType?: any;
   __extensions?: Record<string, any>;
-  __astNode?: UnionTypeDefinitionNode;
-  __extensionASTNodes?: Array<UnionTypeExtensionNode>;
+  __astNode?: any;
+  __extensionASTNodes?: Array<any>;
 };
 
 export type IInputObjectTypeResolver = {
   __name?: string;
   __description?: string;
   __extensions?: Record<string, any>;
-  __astNode?: InputObjectTypeDefinitionNode;
-  __extensionASTNodes?: Array<InputObjectTypeExtensionNode>;
+  __astNode?: any;
+  __extensionASTNodes?: Array<any>;
 };
 
 export type ISchemaLevelResolver<TSource, TContext, TArgs = Record<string, any>, TReturn = any> = IFieldResolver<
@@ -235,9 +198,9 @@ export type IResolvers<TSource = any, TContext = any, TArgs = Record<string, any
   | IInputObjectTypeResolver
 >;
 
-export type IFieldIteratorFn = (fieldDef: GraphQLField<any, any>, typeName: string, fieldName: string) => void;
+export type IFieldIteratorFn = (fieldDef: any, typeName: string, fieldName: string) => void;
 
-export type IDefaultValueIteratorFn = (type: GraphQLInputType, value: any) => void;
+export type IDefaultValueIteratorFn = (type: any, value: any) => void;
 
 export type NextResolverFn = () => Promise<any>;
 
@@ -246,7 +209,7 @@ export type DirectiveResolverFn<TSource = any, TContext = any> = (
   source: TSource,
   args: { [argName: string]: any },
   context: TContext,
-  info: GraphQLResolveInfo
+  info: any
 ) => any;
 
 export interface IDirectiveResolvers<TSource = any, TContext = any> {
@@ -256,24 +219,12 @@ export interface IDirectiveResolvers<TSource = any, TContext = any> {
 export type Operation = 'query' | 'mutation' | 'subscription';
 
 export interface Request {
-  document: DocumentNode;
+  document: any;
   variables: Record<string, any>;
   extensions?: Record<string, any>;
 }
 
-export type VisitableSchemaType =
-  | GraphQLSchema
-  | GraphQLObjectType
-  | GraphQLInterfaceType
-  | GraphQLInputObjectType
-  | GraphQLNamedType
-  | GraphQLScalarType
-  | GraphQLField<any, any>
-  | GraphQLInputField
-  | GraphQLArgument
-  | GraphQLUnionType
-  | GraphQLEnumType
-  | GraphQLEnumValue;
+export type VisitableSchemaType = any;
 
 export type VisitorSelector = (
   type: VisitableSchemaType,
@@ -312,41 +263,41 @@ export interface SchemaVisitorMap {
   [VisitSchemaKind.SUBSCRIPTION]?: ObjectTypeVisitor;
 }
 
-export type NamedTypeVisitor = (type: GraphQLNamedType, schema: GraphQLSchema) => GraphQLNamedType | null | undefined;
+export type NamedTypeVisitor = (type: any, schema: any) => any | null | undefined;
 
 export type ScalarTypeVisitor = (
-  type: GraphQLScalarType,
-  schema: GraphQLSchema
-) => GraphQLScalarType | null | undefined;
+  type: any,
+  schema: any
+) => any | null | undefined;
 
-export type EnumTypeVisitor = (type: GraphQLEnumType, schema: GraphQLSchema) => GraphQLEnumType | null | undefined;
+export type EnumTypeVisitor = (type: any, schema: any) => any | null | undefined;
 
 export type CompositeTypeVisitor = (
-  type: GraphQLObjectType | GraphQLInterfaceType | GraphQLUnionType,
-  schema: GraphQLSchema
-) => GraphQLObjectType | GraphQLInterfaceType | GraphQLUnionType | null | undefined;
+  type: any,
+  schema: any
+) => any | null | undefined;
 
 export type ObjectTypeVisitor = (
-  type: GraphQLObjectType,
-  schema: GraphQLSchema
-) => GraphQLObjectType | null | undefined;
+  type: any,
+  schema: any
+) => any | null | undefined;
 
 export type InputObjectTypeVisitor = (
-  type: GraphQLInputObjectType,
-  schema: GraphQLSchema
-) => GraphQLInputObjectType | null | undefined;
+  type: any,
+  schema: any
+) => any | null | undefined;
 
 export type AbstractTypeVisitor = (
-  type: GraphQLInterfaceType | GraphQLUnionType,
-  schema: GraphQLSchema
-) => GraphQLInterfaceType | GraphQLUnionType | null | undefined;
+  type: any,
+  schema: any
+) => any | null | undefined;
 
-export type UnionTypeVisitor = (type: GraphQLUnionType, schema: GraphQLSchema) => GraphQLUnionType | null | undefined;
+export type UnionTypeVisitor = (type: any, schema: any) => any | null | undefined;
 
 export type InterfaceTypeVisitor = (
-  type: GraphQLInterfaceType,
-  schema: GraphQLSchema
-) => GraphQLInterfaceType | null | undefined;
+  type: any,
+  schema: any
+) => any | null | undefined;
 
 export enum MapperKind {
   TYPE = 'MapperKind.TYPE',
@@ -391,7 +342,7 @@ export interface SchemaMapper {
   [MapperKind.MUTATION]?: ObjectTypeMapper;
   [MapperKind.SUBSCRIPTION]?: ObjectTypeMapper;
   [MapperKind.ENUM_VALUE]?: EnumValueMapper;
-  [MapperKind.FIELD]?: GenericFieldMapper<GraphQLFieldConfig<any, any> | GraphQLInputFieldConfig>;
+  [MapperKind.FIELD]?: GenericFieldMapper<any>;
   [MapperKind.OBJECT_FIELD]?: FieldMapper;
   [MapperKind.ROOT_FIELD]?: FieldMapper;
   [MapperKind.QUERY_ROOT_FIELD]?: FieldMapper;
@@ -404,61 +355,61 @@ export interface SchemaMapper {
   [MapperKind.DIRECTIVE]?: DirectiveMapper;
 }
 
-export type NamedTypeMapper = (type: GraphQLNamedType, schema: GraphQLSchema) => GraphQLNamedType | null | undefined;
+export type NamedTypeMapper = (type: any, schema: any) => any | null | undefined;
 
-export type ScalarTypeMapper = (type: GraphQLScalarType, schema: GraphQLSchema) => GraphQLScalarType | null | undefined;
+export type ScalarTypeMapper = (type: any, schema: any) => any | null | undefined;
 
-export type EnumTypeMapper = (type: GraphQLEnumType, schema: GraphQLSchema) => GraphQLEnumType | null | undefined;
+export type EnumTypeMapper = (type: any, schema: any) => any | null | undefined;
 
 export type EnumValueMapper = (
-  value: GraphQLEnumValueConfig,
+  value: any,
   typeName: string,
-  schema: GraphQLSchema
-) => GraphQLEnumValueConfig | [string, GraphQLEnumValueConfig] | null | undefined;
+  schema: any
+) => any | [string, any] | null | undefined;
 
 export type CompositeTypeMapper = (
-  type: GraphQLObjectType | GraphQLInterfaceType | GraphQLUnionType,
-  schema: GraphQLSchema
-) => GraphQLObjectType | GraphQLInterfaceType | GraphQLUnionType | null | undefined;
+  type: any,
+  schema: any
+) =>any | null | undefined;
 
-export type ObjectTypeMapper = (type: GraphQLObjectType, schema: GraphQLSchema) => GraphQLObjectType | null | undefined;
+export type ObjectTypeMapper = (type: any, schema: any) => any | null | undefined;
 
 export type InputObjectTypeMapper = (
-  type: GraphQLInputObjectType,
-  schema: GraphQLSchema
-) => GraphQLInputObjectType | null | undefined;
+  type: any,
+  schema: any
+) => any | null | undefined;
 
 export type AbstractTypeMapper = (
-  type: GraphQLInterfaceType | GraphQLUnionType,
-  schema: GraphQLSchema
-) => GraphQLInterfaceType | GraphQLUnionType | null | undefined;
+  type: any,
+  schema: any
+) => any | null | undefined;
 
-export type UnionTypeMapper = (type: GraphQLUnionType, schema: GraphQLSchema) => GraphQLUnionType | null | undefined;
+export type UnionTypeMapper = (type: any, schema: any) => any | null | undefined;
 
 export type InterfaceTypeMapper = (
-  type: GraphQLInterfaceType,
-  schema: GraphQLSchema
-) => GraphQLInterfaceType | null | undefined;
+  type: any,
+  schema: any
+) => any | null | undefined;
 
 export type DirectiveMapper = (
-  directive: GraphQLDirective,
-  schema: GraphQLSchema
-) => GraphQLDirective | null | undefined;
+  directive: any,
+  schema: any
+) => any | null | undefined;
 
-export type GenericFieldMapper<F extends GraphQLFieldConfig<any, any> | GraphQLInputFieldConfig> = (
+export type GenericFieldMapper<F extends any> = (
   fieldConfig: F,
   fieldName: string,
   typeName: string,
-  schema: GraphQLSchema
+  schema: any
 ) => F | [string, F] | null | undefined;
 
-export type FieldMapper = GenericFieldMapper<GraphQLFieldConfig<any, any>>;
+export type FieldMapper = GenericFieldMapper<any>;
 
 export type ArgumentMapper = (
-  argumentConfig: GraphQLArgumentConfig,
+  argumentConfig: any,
   fieldName: string,
   typeName: string,
-  schema: GraphQLSchema
-) => GraphQLArgumentConfig | [string, GraphQLArgumentConfig] | null | undefined;
+  schema: any
+) => any | [string, any] | null | undefined;
 
-export type InputFieldMapper = GenericFieldMapper<GraphQLInputFieldConfig>;
+export type InputFieldMapper = GenericFieldMapper<any>;

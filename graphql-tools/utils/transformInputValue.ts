@@ -1,6 +1,5 @@
 import {
   GraphQLEnumType,
-  GraphQLInputType,
   GraphQLScalarType,
   getNullableType,
   isLeafType,
@@ -8,9 +7,9 @@ import {
   isInputObjectType,
 } from "../../deps.ts";
 
-type InputValueTransformer = (type: GraphQLEnumType | GraphQLScalarType, originalValue: any) => any;
+type InputValueTransformer = (type: any, originalValue: any) => any;
 
-export function transformInputValue(type: GraphQLInputType, value: any, transformer: InputValueTransformer): any {
+export function transformInputValue(type: any, value: any, transformer: InputValueTransformer): any {
   if (value == null) {
     return value;
   }
@@ -33,14 +32,14 @@ export function transformInputValue(type: GraphQLInputType, value: any, transfor
   // unreachable, no other possible return value
 }
 
-export function serializeInputValue(type: GraphQLInputType, value: any) {
-  return transformInputValue(type, value, (t, v) => t.serialize(v));
+export function serializeInputValue(type: any, value: any) {
+  return transformInputValue(type, value, (t: any, v) => t.serialize(v));
 }
 
-export function parseInputValue(type: GraphQLInputType, value: any) {
-  return transformInputValue(type, value, (t, v) => t.parseValue(v));
+export function parseInputValue(type: any, value: any) {
+  return transformInputValue(type, value, (t: any, v) => t.parseValue(v));
 }
 
-export function parseInputValueLiteral(type: GraphQLInputType, value: any) {
-  return transformInputValue(type, value, (t, v) => t.parseLiteral(v, {}));
+export function parseInputValueLiteral(type: any, value: any) {
+  return transformInputValue(type, value, (t: any, v) => t.parseLiteral(v, {}));
 }

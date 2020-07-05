@@ -1,16 +1,16 @@
-import { GraphQLSchema, BuildSchemaOptions, buildSchema } from "../../deps.ts";
+import { GraphQLSchema, buildSchema } from "../../deps.ts";
 import { SchemaPrintOptions } from './types.ts';
 import { printSchemaWithDirectives } from './print-schema-with-directives.ts';
 
-function buildFixedSchema(schema: GraphQLSchema, options: BuildSchemaOptions & SchemaPrintOptions) {
+function buildFixedSchema(schema: any, options: any & SchemaPrintOptions) {
   return buildSchema(printSchemaWithDirectives(schema, options), {
     noLocation: true,
     ...(options || {}),
   });
 }
 
-export function fixSchemaAst(schema: GraphQLSchema, options: BuildSchemaOptions & SchemaPrintOptions) {
-  let schemaWithValidAst: GraphQLSchema;
+export function fixSchemaAst(schema: any, options: any & SchemaPrintOptions) {
+  let schemaWithValidAst: any;
   if (!schema.astNode) {
     Object.defineProperty(schema, 'astNode', {
       get() {

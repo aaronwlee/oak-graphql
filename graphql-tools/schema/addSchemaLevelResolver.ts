@@ -1,9 +1,9 @@
-import { defaultFieldResolver, GraphQLSchema, GraphQLFieldResolver } from "../../deps.ts";
+import { defaultFieldResolver, GraphQLSchema } from "../../deps.ts";
 import { mapSchema, MapperKind } from '../utils/index.ts';
 
 // wraps all resolvers of query, mutation or subscription fields
 // with the provided function to simulate a root schema level resolver
-export function addSchemaLevelResolver(schema: GraphQLSchema, fn: GraphQLFieldResolver<any, any>): GraphQLSchema {
+export function addSchemaLevelResolver(schema: any, fn: any): any {
   // TODO test that schema is a schema, fn is a function
   const fnToRunOnlyOnce = runAtMostOncePerRequest(fn);
   return mapSchema(schema, {
@@ -30,10 +30,10 @@ export function addSchemaLevelResolver(schema: GraphQLSchema, fn: GraphQLFieldRe
 
 // XXX badly named function. this doesn't really wrap, it just chains resolvers...
 function wrapResolver(
-  innerResolver: GraphQLFieldResolver<any, any> | undefined,
-  outerResolver: GraphQLFieldResolver<any, any>
-): GraphQLFieldResolver<any, any> {
-  return (obj, args, ctx, info) =>
+  innerResolver: any | undefined,
+  outerResolver: any
+): any {
+  return (obj: any, args: any, ctx: any, info: any) =>
     resolveMaybePromise(outerResolver(obj, args, ctx, info), root => {
       if (innerResolver != null) {
         return innerResolver(root, args, ctx, info);
@@ -63,10 +63,10 @@ function resolveMaybePromise<T, U>(maybePromise: Promise<T> | T, fulfillmentCall
 // if people don't actually cache the operation.
 // if they do cache the operation, they will have to
 // manually remove the __runAtMostOnce before every request.
-function runAtMostOncePerRequest(fn: GraphQLFieldResolver<any, any>): GraphQLFieldResolver<any, any> {
+function runAtMostOncePerRequest(fn: any): any {
   let value: any;
   const randomNumber = Math.random();
-  return (root, args, ctx, info: any) => {
+  return (root: any, args: any, ctx: any, info: any) => {
     if (!info.operation['__runAtMostOnce']) {
       info.operation['__runAtMostOnce'] = {};
     }

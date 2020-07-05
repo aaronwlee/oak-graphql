@@ -1,15 +1,14 @@
-import { DocumentNode, GraphQLSchema, ParseOptions, BuildSchemaOptions } from "../../deps.ts";
+import { GraphQLSchema } from "../../deps.ts";
 // import { GraphQLSchemaValidationOptions } from 'graphql/type/schema';
 
 export interface Source {
-  document?: DocumentNode;
-  schema?: GraphQLSchema;
+  document?: any;
+  schema?: any;
   rawSDL?: string;
   location?: string;
 }
 
-export type SingleFileOptions = ParseOptions &
-  BuildSchemaOptions & {
+export type SingleFileOptions = any & {
     noRequire?: boolean;
     cwd?: string;
   };

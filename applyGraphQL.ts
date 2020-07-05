@@ -2,7 +2,7 @@ import {
   Router,
   RouterContext,
 } from "https://deno.land/x/oak/mod.ts";
-import { graphql, GQLError } from "./deps.ts";
+import { graphql } from "./deps.ts";
 import { renderPlaygroundPage } from "./graphql-playground-html/render-playground-html.ts";
 import { makeExecutableSchema } from "./graphql-tools/schema/makeExecutableSchema.ts";
 
@@ -51,41 +51,23 @@ export const applyGraphQL = async ({
           body.operationName || undefined,
         );
 
-        if (result.errors) {
-          const { errors } = result;
-          response.status = 400;
-          response.body = {
-            data: null,
-            error: Array.isArray(errors) ? errors[0] : errors,
-          };
-          return;
-        } else if (result.data) {
-          response.status = 200;
-          const { data } = result;
-          response.body = {
-            data,
-            error: null
-          };
-          return;
-        }
-
-        response.status = 400;
-        response.body = "gql Error";
+        response.status = 200;
+        response.body = result;
         return;
       } catch (error) {
-        response.status = 500;
+        response.status = 200;
         response.body = {
           data: null,
-          error: {
+          errors: [{
             message: error.message ? error.message : error,
-          },
+          }],
         }
         return;
       }
     }
   });
 
-  await router.get(path, async (ctx: any) => {
+  await router.get(path, async (ctx) => {
     const { request, response } = ctx;
     if (usePlayground) {
       // perform more expensive content-type check only if necessary
@@ -96,7 +78,7 @@ export const applyGraphQL = async ({
       if (prefersHTML) {
         const playground = renderPlaygroundPage({
           endpoint: request.url.origin + path,
-          subscriptionEndpoint: request.url.origin + path,
+          subscriptionEndpoint: request.url.origin,
         });
         response.status = 200;
         response.body = playground;
@@ -104,6 +86,53 @@ export const applyGraphQL = async ({
       }
     }
   });
+
+  // await router.get("/", async (ctx) => {
+  //   const { request, response } = ctx;
+  //   const WS = new SubscriptionServer(
+  //     {
+  //       schema,
+  //       execute: execute as any,
+  //       subscribe,
+  //       onConnect: onConnect
+  //         ? onConnect
+  //         : (connectionParams: Object) => ({ ...connectionParams }),
+  //       onDisconnect: onDisconnect,
+  //       onOperation: async (
+  //         message: { payload: any },
+  //         connection: any,
+  //       ) => {
+  //         connection.formatResponse = (value: any) => value;
+
+  //         // connection.formatError = this.requestOptions.formatError;
+  //         let contextResult;
+  //         try {
+  //           contextResult = context ? await context(ctx) : undefined;
+  //         } catch (error) {
+  //           response.status = 200;
+  //           response.body = {
+  //             data: null,
+  //             errors: [{
+  //               message: error.message ? error.message : error,
+  //             }],
+  //           }
+  //         }
+
+  //         return { ...connection, context: contextResult };
+  //       },
+  //       keepAlive: undefined,
+  //       validationRules: undefined
+  //     },
+  //   );
+  // })
+
+  // await router.get("/", async (ctx) => {
+  //   if (ctx.isUpgradable) {
+  //     const socket = await ctx.upgrade();
+  //     socket.send("graphql-ws")
+  //     await chat(socket)
+  //   }
+  // })
 
   return router as DynamicVersionRouter;
 };

@@ -1,4 +1,4 @@
-import { GraphQLSchema, GraphQLObjectType, isObjectType } from "../../deps.ts";
+import { GraphQLObjectType, isObjectType } from "../../deps.ts";
 
 /**
  * Get all GraphQL types from schema without:
@@ -8,7 +8,7 @@ import { GraphQLSchema, GraphQLObjectType, isObjectType } from "../../deps.ts";
  *
  * @param schema
  */
-export function getUserTypesFromSchema(schema: any): GraphQLObjectType[] {
+export function getUserTypesFromSchema(schema: any): any[] {
   const allTypesMap = schema.getTypeMap();
 
   // tslint:disable-next-line: no-unnecessary-local-variable
@@ -34,5 +34,5 @@ export function getUserTypesFromSchema(schema: any): GraphQLObjectType[] {
     return false;
   });
 
-  return modelTypes as GraphQLObjectType[];
+  return modelTypes as any[];
 }

@@ -1,17 +1,12 @@
 import {
   GraphQLDirective,
   GraphQLEnumType,
-  GraphQLFieldConfigArgumentMap,
-  GraphQLFieldConfigMap,
-  GraphQLInputFieldConfigMap,
   GraphQLInputObjectType,
   GraphQLInterfaceType,
   GraphQLList,
   GraphQLObjectType,
-  GraphQLNamedType,
   GraphQLNonNull,
   GraphQLScalarType,
-  GraphQLType,
   GraphQLUnionType,
   isInterfaceType,
   isEnumType,
@@ -29,8 +24,8 @@ import { getBuiltInForStub, isNamedStub } from './stub.ts';
 import { TypeMap } from './Interfaces.ts';
 
 export function rewireTypes(
-  originalTypeMap: Record<string, GraphQLNamedType | null>,
-  directives: ReadonlyArray<GraphQLDirective>,
+  originalTypeMap: Record<string, any | null>,
+  directives: ReadonlyArray<any>,
   options: {
     skipPruning: boolean;
   } = {
@@ -38,7 +33,7 @@ export function rewireTypes(
   }
 ): {
   typeMap: TypeMap;
-  directives: Array<GraphQLDirective>;
+  directives: Array<any>;
 } {
   const newTypeMap: TypeMap = Object.create(null);
 
@@ -74,13 +69,13 @@ export function rewireTypes(
       }
     : pruneTypes(newTypeMap, newDirectives);
 
-  function rewireDirective(directive: GraphQLDirective): GraphQLDirective {
+  function rewireDirective(directive: any): any {
     const directiveConfig = directive.toConfig();
     directiveConfig.args = rewireArgs(directiveConfig.args);
-    return new GraphQLDirective(directiveConfig);
+    return new (GraphQLDirective as any)(directiveConfig);
   }
 
-  function rewireArgs(args: GraphQLFieldConfigArgumentMap): GraphQLFieldConfigArgumentMap {
+  function rewireArgs(args: any): any {
     const rewiredArgs: any = {};
     Object.keys(args).forEach(argName => {
       const arg = args[argName];
@@ -93,55 +88,55 @@ export function rewireTypes(
     return rewiredArgs;
   }
 
-  function rewireNamedType<T extends GraphQLNamedType>(type: T) {
+  function rewireNamedType<T extends any>(type: T) {
     if (isObjectType(type)) {
-      const config = (type as GraphQLObjectType).toConfig();
+      const config = (type as any).toConfig();
       const newConfig = {
         ...config,
         fields: () => rewireFields(config.fields),
         interfaces: () => rewireNamedTypes(config.interfaces),
       };
-      return new GraphQLObjectType(newConfig);
+      return new (GraphQLObjectType as any)(newConfig);
     } else if (isInterfaceType(type)) {
-      const config = (type as GraphQLInterfaceType).toConfig();
+      const config = (type as any).toConfig();
       const newConfig: any = {
         ...config,
         fields: () => rewireFields(config.fields),
       };
       if ('interfaces' in newConfig) {
         newConfig.interfaces = () =>
-          rewireNamedTypes(((config as unknown) as { interfaces: Array<GraphQLInterfaceType> }).interfaces);
+          rewireNamedTypes(((config as unknown) as { interfaces: Array<any> }).interfaces);
       }
-      return new GraphQLInterfaceType(newConfig);
+      return new (GraphQLInterfaceType as any)(newConfig);
     } else if (isUnionType(type)) {
-      const config = (type as GraphQLUnionType).toConfig();
+      const config = (type as any).toConfig();
       const newConfig = {
         ...config,
         types: () => rewireNamedTypes(config.types),
       };
-      return new GraphQLUnionType(newConfig);
+      return new (GraphQLUnionType as any)(newConfig);
     } else if (isInputObjectType(type)) {
-      const config = (type as GraphQLInputObjectType).toConfig();
+      const config = (type as any).toConfig();
       const newConfig = {
         ...config,
         fields: () => rewireInputFields(config.fields),
       };
-      return new GraphQLInputObjectType(newConfig);
+      return new (GraphQLInputObjectType as any)(newConfig);
     } else if (isEnumType(type)) {
-      const enumConfig = (type as GraphQLEnumType).toConfig();
-      return new GraphQLEnumType(enumConfig);
+      const enumConfig = (type as any).toConfig();
+      return new (GraphQLEnumType as any)(enumConfig);
     } else if (isScalarType(type)) {
       if (isSpecifiedScalarType(type)) {
         return type;
       }
-      const scalarConfig = (type as GraphQLScalarType).toConfig();
-      return new GraphQLScalarType(scalarConfig);
+      const scalarConfig = (type as any).toConfig();
+      return new (GraphQLScalarType as any)(scalarConfig);
     }
 
     throw new Error(`Unexpected schema type: ${(type as unknown) as string}`);
   }
 
-  function rewireFields(fields: GraphQLFieldConfigMap<any, any>): GraphQLFieldConfigMap<any, any> {
+  function rewireFields(fields: any): any {
     const rewiredFields: any = {};
     Object.keys(fields).forEach(fieldName => {
       const field: any = fields[fieldName];
@@ -155,7 +150,7 @@ export function rewireTypes(
     return rewiredFields;
   }
 
-  function rewireInputFields(fields: GraphQLInputFieldConfigMap): GraphQLInputFieldConfigMap {
+  function rewireInputFields(fields: any): any {
     const rewiredFields: any = {};
     Object.keys(fields).forEach(fieldName => {
       const field = fields[fieldName];
@@ -168,7 +163,7 @@ export function rewireTypes(
     return rewiredFields;
   }
 
-  function rewireNamedTypes<T extends GraphQLNamedType>(namedTypes: Array<T>): Array<T> {
+  function rewireNamedTypes<T extends any>(namedTypes: Array<T>): Array<T> {
     const rewiredTypes: Array<T> = [];
     namedTypes.forEach(namedType => {
       const rewiredType = rewireType(namedType);
@@ -179,13 +174,13 @@ export function rewireTypes(
     return rewiredTypes;
   }
 
-  function rewireType<T extends GraphQLType>(type: T): T | null {
+  function rewireType<T extends any>(type: any): any {
     if (isListType(type)) {
       const rewiredType = rewireType(type.ofType);
-      return rewiredType != null ? (new GraphQLList(rewiredType) as T) : null;
+      return rewiredType != null ? (new (GraphQLList as any)(rewiredType) as T) : null;
     } else if (isNonNullType(type)) {
       const rewiredType = rewireType(type.ofType);
-      return rewiredType != null ? (new GraphQLNonNull(rewiredType) as T) : null;
+      return rewiredType != null ? (new (GraphQLNonNull as any)(rewiredType) as T) : null;
     } else if (isNamedType(type)) {
       let rewiredType = originalTypeMap[type.name];
       if (rewiredType === undefined) {
@@ -201,10 +196,10 @@ export function rewireTypes(
 
 function pruneTypes(
   typeMap: TypeMap,
-  directives: Array<GraphQLDirective>
+  directives: Array<any>
 ): {
   typeMap: TypeMap;
-  directives: Array<GraphQLDirective>;
+  directives: Array<any>;
 } {
   const newTypeMap: any = {};
 
@@ -213,7 +208,7 @@ function pruneTypes(
     const namedType = typeMap[typeName];
 
     if ('getInterfaces' in namedType) {
-      namedType.getInterfaces().forEach(iface => {
+      namedType.getInterfaces().forEach((iface: any) => {
         implementedInterfaces[iface.name] = true;
       });
     }
