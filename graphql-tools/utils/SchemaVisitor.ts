@@ -1,13 +1,3 @@
-import {
-  GraphQLEnumType,
-  GraphQLInputObjectType,
-  GraphQLInterfaceType,
-  GraphQLObjectType,
-  GraphQLScalarType,
-  GraphQLSchema,
-  GraphQLUnionType,
-} from "../../deps.ts";
-
 // Abstract base class of any visitor implementation, defining the available
 // visitor methods along with their parameter types, and providing a static
 // helper function for determining whether a subclass implements a given

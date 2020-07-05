@@ -1,11 +1,5 @@
 import {
-  GraphQLEnumType,
-  GraphQLInputObjectType,
-  GraphQLInterfaceType,
   GraphQLObjectType,
-  GraphQLScalarType,
-  GraphQLUnionType,
-  GraphQLSchema,
 } from "../../deps.ts";
 
 import { MapperKind, FieldFilter, RootFieldFilter } from './Interfaces.ts';

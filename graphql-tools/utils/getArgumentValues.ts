@@ -1,6 +1,5 @@
 import {
   valueFromAST,
-  GraphQLDirective,
   isNonNullType,
   GraphQLError,
   Kind,

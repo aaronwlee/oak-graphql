@@ -1,5 +1,3 @@
-import { GraphQLSchema } from "../../deps.ts";
-// import { GraphQLSchemaValidationOptions } from 'graphql/type/schema';
 
 export interface Source {
   document?: any;

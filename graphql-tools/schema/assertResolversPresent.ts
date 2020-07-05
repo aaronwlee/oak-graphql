@@ -1,4 +1,4 @@
-import { GraphQLSchema, getNamedType, isScalarType } from "../../deps.ts";
+import { getNamedType, isScalarType } from "../../deps.ts";
 
 import { IResolverValidationOptions, forEachField } from '../utils/index.ts';
 

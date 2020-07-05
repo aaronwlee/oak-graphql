@@ -1,8 +1,6 @@
-import { GraphQLSchema } from "../../deps.ts";
-
 import { IResolvers, IObjectTypeResolver } from '../utils/index.ts';
 
-export function extendResolversFromInterfaces(schema: GraphQLSchema, resolvers: IResolvers): IResolvers {
+export function extendResolversFromInterfaces(schema: any, resolvers: IResolvers): IResolvers {
   const typeNames = Object.keys({
     ...schema.getTypeMap(),
     ...resolvers,

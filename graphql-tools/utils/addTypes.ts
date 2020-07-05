@@ -27,9 +27,7 @@
 //
 
 import {
-  GraphQLObjectType,
   GraphQLSchema,
-  GraphQLDirective,
   isNamedType,
   isDirective,
 } from "../../deps.ts";

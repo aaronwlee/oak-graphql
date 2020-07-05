@@ -1,5 +1,4 @@
 import {
-  GraphQLSchema,
   isScalarType,
   isEnumType,
   isInterfaceType,

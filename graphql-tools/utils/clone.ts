@@ -5,7 +5,6 @@ import {
   GraphQLInterfaceType,
   GraphQLObjectType,
   GraphQLScalarType,
-  GraphQLSchema,
   GraphQLUnionType,
   isObjectType,
   isInterfaceType,

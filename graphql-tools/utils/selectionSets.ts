@@ -1,4 +1,4 @@
-import { parse, Kind, GraphQLObjectType, getNamedType } from "../../deps.ts";
+import { parse, Kind, getNamedType } from "../../deps.ts";
 
 export function parseSelectionSet(selectionSet: string): any {
   const query = (parse as any)(selectionSet).definitions[0] as any;

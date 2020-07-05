@@ -1,4 +1,4 @@
-import { GraphQLSchema, defaultFieldResolver } from "../../deps.ts";
+import { defaultFieldResolver } from "../../deps.ts";
 
 import { IDirectiveResolvers, mapSchema, MapperKind, getDirectives } from '../utils/index.ts';
 

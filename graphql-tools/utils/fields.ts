@@ -1,4 +1,4 @@
-import { GraphQLObjectType, GraphQLSchema } from "../../deps.ts";
+import { GraphQLObjectType } from "../../deps.ts";
 import { MapperKind } from './Interfaces.ts';
 import { mapSchema } from './mapSchema.ts';
 import { addTypes } from './addTypes.ts';

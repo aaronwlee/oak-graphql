@@ -1,4 +1,4 @@
-import { defaultFieldResolver, GraphQLSchema } from "../../deps.ts";
+import { defaultFieldResolver } from "../../deps.ts";
 import { mapSchema, MapperKind } from '../utils/index.ts';
 
 function decorateToCatchUndefined(fn: any, hint: string): any {

@@ -1,8 +1,3 @@
-import {
-  GraphQLDirective,
-  GraphQLSchema,
-} from "../../deps.ts";
-
 import { getArgumentValues } from './getArgumentValues.ts';
 
 export type DirectiveUseMap = { [key: string]: any };

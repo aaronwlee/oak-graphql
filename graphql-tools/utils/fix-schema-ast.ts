@@ -1,4 +1,4 @@
-import { GraphQLSchema, buildSchema } from "../../deps.ts";
+import { buildSchema } from "../../deps.ts";
 import { SchemaPrintOptions } from './types.ts';
 import { printSchemaWithDirectives } from './print-schema-with-directives.ts';
 

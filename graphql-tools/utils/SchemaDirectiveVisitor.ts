@@ -1,6 +1,4 @@
 import {
-  GraphQLDirective,
-  GraphQLSchema,
   valueFromASTUntyped,
 } from "../../deps.ts";
 

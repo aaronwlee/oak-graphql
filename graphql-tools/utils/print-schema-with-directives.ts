@@ -1,5 +1,4 @@
 import {
-  GraphQLSchema,
   print,
   printType,
   Kind,

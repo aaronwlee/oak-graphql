@@ -1,4 +1,4 @@
-import { getNamedType, GraphQLSchema, isObjectType, isInputObjectType } from "../../deps.ts";
+import { getNamedType, isObjectType, isInputObjectType } from "../../deps.ts";
 
 import { IDefaultValueIteratorFn } from './Interfaces.ts';
 

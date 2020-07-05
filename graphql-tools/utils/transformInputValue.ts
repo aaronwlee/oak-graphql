@@ -1,6 +1,4 @@
 import {
-  GraphQLEnumType,
-  GraphQLScalarType,
   getNullableType,
   isLeafType,
   isListType,

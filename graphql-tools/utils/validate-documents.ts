@@ -1,10 +1,7 @@
 import {
   Kind,
   validate,
-  GraphQLSchema,
-  GraphQLError,
   specifiedRules,
-  ValidationContext,
 } from "../../deps.ts";
 import { Source } from './loaders.ts';
 import { CombinedError } from './errors.ts';

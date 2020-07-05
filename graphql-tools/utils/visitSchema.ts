@@ -1,6 +1,4 @@
 import {
-  GraphQLInterfaceType,
-  GraphQLObjectType,
   GraphQLSchema,
   isNamedType,
   isSchema,

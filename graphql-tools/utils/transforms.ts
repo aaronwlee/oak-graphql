@@ -4,9 +4,9 @@ import { Request, Transform } from './Interfaces.ts';
 
 import { cloneSchema } from './clone.ts';
 
-export function applySchemaTransforms(originalSchema: GraphQLSchema, transforms: Array<Transform>): GraphQLSchema {
+export function applySchemaTransforms(originalSchema: any, transforms: Array<Transform>): any {
   return transforms.reduce(
-    (schema: GraphQLSchema, transform: Transform) =>
+    (schema: any, transform: Transform) =>
       transform.transformSchema != null ? transform.transformSchema(cloneSchema(schema)) : schema,
     originalSchema
   );

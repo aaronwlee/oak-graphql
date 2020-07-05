@@ -1,5 +1,4 @@
 import {
-  GraphQLDirective,
   GraphQLObjectType,
   GraphQLSchema,
   isInterfaceType,

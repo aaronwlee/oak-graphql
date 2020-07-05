@@ -1,4 +1,4 @@
-import { GraphQLSchema, isObjectType } from "../../deps.ts";
+import { isObjectType } from "../../deps.ts";
 
 export function getImplementingTypes(interfaceName: string, schema: any): string[] {
   const allTypesMap = schema.getTypeMap();

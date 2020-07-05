@@ -1,10 +1,9 @@
-import { GraphQLObjectType } from "../../deps.ts";
 
 export function createSchemaDefinition(
   def: {
-    query: string | GraphQLObjectType | null | undefined;
-    mutation: string | GraphQLObjectType | null | undefined;
-    subscription: string | GraphQLObjectType | null | undefined;
+    query: string | any | null | undefined;
+    mutation: string | any | null | undefined;
+    subscription: string | any | null | undefined;
   },
   config?: {
     force?: boolean;

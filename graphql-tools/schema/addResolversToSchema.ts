@@ -1,6 +1,5 @@
 import {
   GraphQLEnumType,
-  GraphQLSchema,
   isSchema,
   GraphQLScalarType,
   GraphQLUnionType,

@@ -1,9 +1,8 @@
-import { GraphQLSchema } from "../../deps.ts";
 import { mapSchema, MapperKind } from '../utils/index.ts';
 import { decorateWithLogger } from './decorateWithLogger.ts';
 import { ILogger } from './types.ts';
 
-export function addErrorLoggingToSchema(schema: GraphQLSchema, logger?: ILogger): GraphQLSchema {
+export function addErrorLoggingToSchema(schema: any, logger?: ILogger): any {
   if (!logger) {
     throw new Error('Must provide a logger');
   }

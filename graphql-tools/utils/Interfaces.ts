@@ -1,15 +1,3 @@
-import {
-  GraphQLSchema,
-  GraphQLScalarType,
-  GraphQLEnumType,
-  GraphQLUnionType,
-  GraphQLInputObjectType,
-  GraphQLInterfaceType,
-  GraphQLObjectType,
-  GraphQLDirective,
-  GraphQLError,
-} from "../../deps.ts";
-
 import { SchemaVisitor } from './SchemaVisitor.ts';
 
 // graphql-js < v15 backwards compatible ExecutionResult

@@ -1,13 +1,7 @@
 import {
-  GraphQLDirective,
-  GraphQLInputObjectType,
-  GraphQLInterfaceType,
   GraphQLList,
-  GraphQLObjectType,
   GraphQLNonNull,
-  GraphQLUnionType,
   isNamedType,
-  GraphQLSchema,
   isObjectType,
   isInterfaceType,
   isUnionType,

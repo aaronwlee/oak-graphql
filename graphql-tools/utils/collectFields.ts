@@ -1,5 +1,4 @@
 import {
-  GraphQLObjectType,
   Kind,
   getDirectiveValues,
   GraphQLSkipDirective,
