@@ -41,7 +41,7 @@ export const applyGraphQL = async ({
     if (request.hasBody) {
       try {
         const contextResult = context ? await context(ctx) : undefined;
-        const body = (await request.body()).value;
+        const body = await request.body().value;
         const result = await (graphql as any)(
           schema,
           body.query,
