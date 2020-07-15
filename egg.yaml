@@ -1,10 +1,16 @@
 name: oak-graphql
 description: A simple graphql middleware for oak deno framework.
 stable: false
-version: 0.5.5
+version: 0.5.6
 entry: ./mod.ts
 repository: https://github.com/aaronwlee/Oak-GraphQL
 files:
-  - ./README.md
-  - ./**
-  - ./mod.ts
+  - README.md
+  - deps.ts
+  - applyGraphQL.ts
+  - mod.ts
+  - graphql-playground-html/**/*
+  - graphql-tools/**/*
+  - graphql-subscriptions/**/*
+  - subscriptions-transport-ws/**/*
+
