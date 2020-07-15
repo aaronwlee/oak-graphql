@@ -1,4 +1,4 @@
-name: Oak-GraphQL
+name: oak-graphql
 description: A simple graphql middleware for oak deno framework.
 stable: false
 version: 0.5.3
