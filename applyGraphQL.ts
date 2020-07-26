@@ -1,7 +1,7 @@
 import {
   Router,
   RouterContext,
-} from "https://deno.land/x/oak/mod.ts";
+} from "https://deno.land/x/oak@v6.0.1/mod.ts";
 import { graphql } from "./deps.ts";
 import { renderPlaygroundPage } from "./graphql-playground-html/render-playground-html.ts";
 import { makeExecutableSchema } from "./graphql-tools/schema/makeExecutableSchema.ts";
