@@ -1,7 +1,7 @@
 name: oak-graphql
 description: A simple graphql middleware for oak deno framework.
 stable: false
-version: 0.5.8
+version: 0.5.9
 entry: ./mod.ts
 repository: https://github.com/aaronwlee/Oak-GraphQL
 files:

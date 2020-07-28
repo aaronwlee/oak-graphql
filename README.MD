@@ -12,7 +12,7 @@ A simple graphql middleware for oak deno framework.
 
 ## Simple example
 ```ts
-import { Application } from "https://deno.land/x/oak/mod.ts";
+import { Application, Router, RouterContext } from "https://deno.land/x/oak/mod.ts";
 import { applyGraphQL, gql, GQLError } from "https://deno.land/x/oak_graphql/mod.ts";
 
 const app = new Application();
@@ -77,10 +77,11 @@ const resolvers = {
   },
 };
 
-const GraphQLService = await applyGraphQL({
+const GraphQLService = await applyGraphQL<Router>({
+  Router,
   typeDefs: types,
   resolvers: resolvers,
-  context: (ctx) => {
+  context: (ctx: RouterContext) => {
     return { user: "Aaron" };
   }
 })
@@ -116,6 +117,7 @@ throw new GQLError({type: "General error", detail: "somthing critical!"});
 ### applyGraphQL
 A Generator which based Attain Router class creates some middlewares for supporting the GraphQL.
 > Options
+- Router: oak Router module <br />Due to the version incompatible issue mentioned by (avalero)[https://github.com/avalero], I've decoupled the Router. Thanks :)
 - path?: string <br /> A target path that handles the GraphQL post request (__*optional__: default as `/graphql`)
 - typeDefs: any <br /> generated type tags by the `gql`
 - resolvers: any <br /> An object that handles the queries and mutations
