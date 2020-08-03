@@ -182,4 +182,4 @@ gql.disableFragmentWarnings = disableFragmentWarnings;
 gql.enableExperimentalFragmentVariables = enableExperimentalFragmentVariables;
 gql.disableExperimentalFragmentVariables = disableExperimentalFragmentVariables;
 
-export default gql;
+export default gql as any;

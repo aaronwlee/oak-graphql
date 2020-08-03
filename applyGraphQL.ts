@@ -1,16 +1,22 @@
-import {
-  Router,
-  RouterContext,
-} from "https://deno.land/x/oak@v6.0.1/mod.ts";
 import { graphql } from "./deps.ts";
 import { renderPlaygroundPage } from "./graphql-playground-html/render-playground-html.ts";
 import { makeExecutableSchema } from "./graphql-tools/schema/makeExecutableSchema.ts";
 
-export interface ApplyGraphQLOptions {
+interface Constructable<T> {
+  new(...args: any): T & OakRouter;
+}
+
+interface OakRouter {
+  post: any;
+  get: any;
+}
+
+export interface ApplyGraphQLOptions<T> {
+  Router: Constructable<T>;
   path?: string;
   typeDefs: any;
   resolvers: ResolversProps;
-  context?: (ctx: RouterContext) => any;
+  context?: (ctx: any) => any;
   usePlayground?: boolean;
 }
 
@@ -20,18 +26,14 @@ export interface ResolversProps {
   [dynamicProperty: string]: any;
 }
 
-interface DynamicVersionRouter {
-  routes: any;
-  allowedMethods: any;
-}
-
-export const applyGraphQL = async ({
+export async function applyGraphQL<T>({
+  Router,
   path = "/graphql",
   typeDefs,
   resolvers,
   context,
   usePlayground = true,
-}: ApplyGraphQLOptions): Promise<DynamicVersionRouter> => {
+}: ApplyGraphQLOptions<T>): Promise<T> {
   const router = new Router();
 
   const schema = makeExecutableSchema({ typeDefs, resolvers });
@@ -67,7 +69,7 @@ export const applyGraphQL = async ({
     }
   });
 
-  await router.get(path, async (ctx) => {
+  await router.get(path, async (ctx: any) => {
     const { request, response } = ctx;
     if (usePlayground) {
       // perform more expensive content-type check only if necessary
@@ -134,5 +136,5 @@ export const applyGraphQL = async ({
   //   }
   // })
 
-  return router as DynamicVersionRouter;
+  return router;
 };
