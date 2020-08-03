@@ -31,7 +31,7 @@ app.use(async (ctx, next) => {
   ctx.response.headers.set("X-Response-Time", `${ms}ms`);
 });
 
-const types = (gql as any)`
+const types = gql`
 type User {
   firstName: String
   lastName: String
