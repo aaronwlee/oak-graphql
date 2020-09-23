@@ -12,8 +12,8 @@ A simple graphql middleware for oak deno framework.
 
 ## Simple example
 ```ts
-// deno 1.2.x required oak version up to v6.0.1
-import { Application, Router, RouterContext } from "https://deno.land/x/oak@v6.0.1/mod.ts";
+
+import { Application, Router, RouterContext } from "https://deno.land/x/oak@v6.2.0/mod.ts";
 import { applyGraphQL, gql, GQLError } from "https://deno.land/x/oak_graphql/mod.ts";
 
 const app = new Application();
