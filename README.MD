@@ -3,11 +3,11 @@
 
 A simple graphql middleware for oak deno framework.
 
-![alt text](https://github.com/aaronwlee/Oak-GraphQL/blob/master/playground.JPG?raw=true "Oak-GraphQL")
+![alt text](https://github.com/aaronwlee/oak_graphql/blob/master/playground.JPG?raw=true "Oak-GraphQL")
 
 ! Make sure your playground endpoint indicates same as your URL http://localhost:8080/graphql
 
-![alt text](https://github.com/aaronwlee/Oak-GraphQL/blob/master/mustsame.JPG?raw=true "Oak-GraphQL")
+![alt text](https://github.com/aaronwlee/oak_graphql/blob/master/mustsame.JPG?raw=true "Oak-GraphQL")
 
 
 ## Simple example
