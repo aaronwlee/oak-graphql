@@ -7,16 +7,16 @@ import {
   isSpecifiedScalarType,
 } from "../../deps.ts";
 
-import { IResolvers } from './Interfaces.ts';
+import type { IResolvers } from "./Interfaces.ts";
 
-import { cloneType } from './clone.ts';
+import { cloneType } from "./clone.ts";
 
 export function getResolversFromSchema(schema: any): IResolvers {
   const resolvers = Object.create({});
 
   const typeMap = schema.getTypeMap();
 
-  Object.keys(typeMap).forEach(typeName => {
+  Object.keys(typeMap).forEach((typeName) => {
     const type = typeMap[typeName];
 
     if (isScalarType(type)) {
@@ -50,7 +50,7 @@ export function getResolversFromSchema(schema: any): IResolvers {
       }
 
       const fields = type.getFields();
-      Object.keys(fields).forEach(fieldName => {
+      Object.keys(fields).forEach((fieldName) => {
         const field = fields[fieldName];
 
         resolvers[typeName][fieldName] = {

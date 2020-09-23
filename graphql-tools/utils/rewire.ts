@@ -20,8 +20,8 @@ import {
   isSpecifiedScalarType,
 } from "../../deps.ts";
 
-import { getBuiltInForStub, isNamedStub } from './stub.ts';
-import { TypeMap } from './Interfaces.ts';
+import { getBuiltInForStub, isNamedStub } from "./stub.ts";
+import type { TypeMap } from "./Interfaces.ts";
 
 export function rewireTypes(
   originalTypeMap: Record<string, any | null>,
@@ -37,15 +37,15 @@ export function rewireTypes(
 } {
   const newTypeMap: TypeMap = Object.create(null);
 
-  Object.keys(originalTypeMap).forEach(typeName => {
+  Object.keys(originalTypeMap).forEach((typeName) => {
     const namedType = originalTypeMap[typeName];
 
-    if (namedType == null || typeName.startsWith('__')) {
+    if (namedType == null || typeName.startsWith("__")) {
       return;
     }
 
     const newName = namedType.name;
-    if (newName.startsWith('__')) {
+    if (newName.startsWith("__")) {
       return;
     }
 
@@ -56,11 +56,13 @@ export function rewireTypes(
     newTypeMap[newName] = namedType;
   });
 
-  Object.keys(newTypeMap).forEach(typeName => {
+  Object.keys(newTypeMap).forEach((typeName) => {
     newTypeMap[typeName] = rewireNamedType(newTypeMap[typeName]);
   });
 
-  const newDirectives = directives.map(directive => rewireDirective(directive));
+  const newDirectives = directives.map((directive) =>
+    rewireDirective(directive)
+  );
 
   return options.skipPruning
     ? {
@@ -77,7 +79,7 @@ export function rewireTypes(
 
   function rewireArgs(args: any): any {
     const rewiredArgs: any = {};
-    Object.keys(args).forEach(argName => {
+    Object.keys(args).forEach((argName) => {
       const arg = args[argName];
       const rewiredArgType = rewireType(arg.type);
       if (rewiredArgType != null) {
@@ -103,9 +105,11 @@ export function rewireTypes(
         ...config,
         fields: () => rewireFields(config.fields),
       };
-      if ('interfaces' in newConfig) {
+      if ("interfaces" in newConfig) {
         newConfig.interfaces = () =>
-          rewireNamedTypes(((config as unknown) as { interfaces: Array<any> }).interfaces);
+          rewireNamedTypes(
+            ((config as unknown) as { interfaces: Array<any> }).interfaces
+          );
       }
       return new (GraphQLInterfaceType as any)(newConfig);
     } else if (isUnionType(type)) {
@@ -138,7 +142,7 @@ export function rewireTypes(
 
   function rewireFields(fields: any): any {
     const rewiredFields: any = {};
-    Object.keys(fields).forEach(fieldName => {
+    Object.keys(fields).forEach((fieldName) => {
       const field: any = fields[fieldName];
       const rewiredFieldType = rewireType(field.type);
       if (rewiredFieldType != null) {
@@ -152,7 +156,7 @@ export function rewireTypes(
 
   function rewireInputFields(fields: any): any {
     const rewiredFields: any = {};
-    Object.keys(fields).forEach(fieldName => {
+    Object.keys(fields).forEach((fieldName) => {
       const field = fields[fieldName];
       const rewiredFieldType = rewireType(field.type);
       if (rewiredFieldType != null) {
@@ -165,7 +169,7 @@ export function rewireTypes(
 
   function rewireNamedTypes<T extends any>(namedTypes: Array<T>): Array<T> {
     const rewiredTypes: Array<T> = [];
-    namedTypes.forEach(namedType => {
+    namedTypes.forEach((namedType) => {
       const rewiredType = rewireType(namedType);
       if (rewiredType != null) {
         rewiredTypes.push(rewiredType);
@@ -177,10 +181,14 @@ export function rewireTypes(
   function rewireType<T extends any>(type: any): any {
     if (isListType(type)) {
       const rewiredType = rewireType(type.ofType);
-      return rewiredType != null ? (new (GraphQLList as any)(rewiredType) as T) : null;
+      return rewiredType != null
+        ? (new (GraphQLList as any)(rewiredType) as T)
+        : null;
     } else if (isNonNullType(type)) {
       const rewiredType = rewireType(type.ofType);
-      return rewiredType != null ? (new (GraphQLNonNull as any)(rewiredType) as T) : null;
+      return rewiredType != null
+        ? (new (GraphQLNonNull as any)(rewiredType) as T)
+        : null;
     } else if (isNamedType(type)) {
       let rewiredType = originalTypeMap[type.name];
       if (rewiredType === undefined) {
@@ -204,10 +212,10 @@ function pruneTypes(
   const newTypeMap: any = {};
 
   const implementedInterfaces: any = {};
-  Object.keys(typeMap).forEach(typeName => {
+  Object.keys(typeMap).forEach((typeName) => {
     const namedType = typeMap[typeName];
 
-    if ('getInterfaces' in namedType) {
+    if ("getInterfaces" in namedType) {
       namedType.getInterfaces().forEach((iface: any) => {
         implementedInterfaces[iface.name] = true;
       });
@@ -235,7 +243,10 @@ function pruneTypes(
       }
     } else if (isInterfaceType(type)) {
       // prune interfaces without fields or without implementations
-      if (Object.keys(type.getFields()).length && implementedInterfaces[type.name]) {
+      if (
+        Object.keys(type.getFields()).length &&
+        implementedInterfaces[type.name]
+      ) {
         newTypeMap[typeName] = type;
       } else {
         prunedTypeMap = true;
@@ -246,5 +257,7 @@ function pruneTypes(
   }
 
   // every prune requires another round of healing
-  return prunedTypeMap ? rewireTypes(newTypeMap, directives) : { typeMap, directives };
+  return prunedTypeMap
+    ? rewireTypes(newTypeMap, directives)
+    : { typeMap, directives };
 }

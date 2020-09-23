@@ -1,4 +1,4 @@
-import { SchemaVisitor } from './SchemaVisitor.ts';
+import type { SchemaVisitor } from './SchemaVisitor.ts';
 
 // graphql-js < v15 backwards compatible ExecutionResult
 // See: https://github.com/graphql/graphql-js/pull/2490

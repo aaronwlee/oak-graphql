@@ -1,12 +1,10 @@
-import {
-  valueFromASTUntyped,
-} from "../../deps.ts";
+import { valueFromASTUntyped } from "../../deps.ts";
 
-import { VisitableSchemaType } from './Interfaces.ts';
+import type { VisitableSchemaType } from "./Interfaces.ts";
 
-import { SchemaVisitor } from './SchemaVisitor.ts';
-import { visitSchema } from './visitSchema.ts';
-import { getArgumentValues } from './getArgumentValues.ts';
+import type { SchemaVisitor } from "./SchemaVisitor.ts";
+import { visitSchema } from "./visitSchema.ts";
+import { getArgumentValues } from "./getArgumentValues.ts";
 
 // This class represents a reusable implementation of a @directive that may
 // appear in a GraphQL schema written in Schema Definition Language.
@@ -51,7 +49,10 @@ import { getArgumentValues } from './getArgumentValues.ts';
 // parameter types, and more details about the properties exposed by instances
 // of the SchemaDirectiveVisitor class.
 
-export class SchemaDirectiveVisitor<TArgs = any, TContext = any> extends SchemaVisitor {
+export class SchemaDirectiveVisitor<
+  TArgs = any,
+  TContext = any
+> extends SchemaVisitor {
   // The name of the directive this visitor is allowed to visit (that is, the
   // identifier that appears after the @ character in the schema). Note that
   // this property is per-instance rather than static because subclasses of
@@ -108,7 +109,10 @@ export class SchemaDirectiveVisitor<TArgs = any, TContext = any> extends SchemaV
     // If the schema declares any directives for public consumption, record
     // them here so that we can properly coerce arguments when/if we encounter
     // an occurrence of the directive while walking the schema below.
-    const declaredDirectives = this.getDeclaredDirectives(schema, directiveVisitors);
+    const declaredDirectives = this.getDeclaredDirectives(
+      schema,
+      directiveVisitors
+    );
 
     // Map from directive names to lists of SchemaDirectiveVisitor instances
     // created while visiting the schema.
@@ -128,7 +132,10 @@ export class SchemaDirectiveVisitor<TArgs = any, TContext = any> extends SchemaV
       {}
     );
 
-    function visitorSelector(type: VisitableSchemaType, methodName: string): Array<SchemaDirectiveVisitor> {
+    function visitorSelector(
+      type: VisitableSchemaType,
+      methodName: string
+    ): Array<SchemaDirectiveVisitor> {
       let directiveNodes = type?.astNode?.directives ?? [];
 
       const extensionASTNodes: any = (type as {
@@ -194,7 +201,7 @@ export class SchemaDirectiveVisitor<TArgs = any, TContext = any> extends SchemaV
       });
 
       if (visitors.length > 0) {
-        visitors.forEach(visitor => {
+        visitors.forEach((visitor) => {
           createdVisitors[visitor.name].push(visitor);
         });
       }
@@ -211,7 +218,10 @@ export class SchemaDirectiveVisitor<TArgs = any, TContext = any> extends SchemaV
     schema: any,
     directiveVisitors: Record<string, SchemaDirectiveVisitorClass>
   ): Record<string, any> {
-    const declaredDirectives: Record<string, any> = schema.getDirectives().reduce(
+    const declaredDirectives: Record<
+      string,
+      any
+    > = schema.getDirectives().reduce(
       (prev: any, curr: any) => ({
         ...prev,
         [curr.name]: curr,
@@ -223,12 +233,17 @@ export class SchemaDirectiveVisitor<TArgs = any, TContext = any> extends SchemaV
     // declared in the schema itself. Reasoning: if a SchemaDirectiveVisitor
     // goes to the trouble of implementing getDirectiveDeclaration, it should
     // be able to rely on that implementation.
-    Object.entries(directiveVisitors).forEach(([directiveName, visitorClass]) => {
-      const decl = visitorClass.getDirectiveDeclaration(directiveName, schema);
-      if (decl != null) {
-        declaredDirectives[directiveName] = decl;
+    Object.entries(directiveVisitors).forEach(
+      ([directiveName, visitorClass]) => {
+        const decl = visitorClass.getDirectiveDeclaration(
+          directiveName,
+          schema
+        );
+        if (decl != null) {
+          declaredDirectives[directiveName] = decl;
+        }
       }
-    });
+    );
 
     Object.entries(declaredDirectives).forEach(([name, decl]) => {
       if (!(name in directiveVisitors)) {
@@ -250,7 +265,9 @@ export class SchemaDirectiveVisitor<TArgs = any, TContext = any> extends SchemaV
           // it's definitely a mistake if the GraphQLDirective declares itself
           // applicable to certain schema locations, and the visitor subclass
           // does not implement all the corresponding methods.
-          throw new Error(`SchemaDirectiveVisitor for @${name} must implement ${visitorMethodName} method`);
+          throw new Error(
+            `SchemaDirectiveVisitor for @${name} must implement ${visitorMethodName} method`
+          );
         }
       });
     });
@@ -279,8 +296,12 @@ export class SchemaDirectiveVisitor<TArgs = any, TContext = any> extends SchemaV
 // Convert a string like "FIELD_DEFINITION" to "visitFieldDefinition".
 function directiveLocationToVisitorMethodName(loc: any) {
   return (
-    'visit' +
-    loc.replace(/([^_]*)_?/g, (_wholeMatch: any, part: string) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    "visit" +
+    loc.replace(
+      /([^_]*)_?/g,
+      (_wholeMatch: any, part: string) =>
+        part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()
+    )
   );
 }
 
