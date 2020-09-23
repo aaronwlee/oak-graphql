@@ -1,4 +1,4 @@
-import { EventEmitter } from "https://deno.land/std@0.61.0/node/events.ts";
+import { EventEmitter } from "https://deno.land/std@0.69.0/node/events.ts";
 import { PubSubEngine } from "./pubsub-engine.ts";
 
 export interface PubSubOptions {
