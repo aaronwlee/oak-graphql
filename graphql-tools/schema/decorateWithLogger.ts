@@ -1,5 +1,5 @@
 import { defaultFieldResolver } from "../../deps.ts";
-import { ILogger } from './types.ts';
+import type { ILogger } from "./types.ts";
 
 /*
  * fn: The function to decorate with the logger
@@ -19,7 +19,7 @@ export function decorateWithLogger(
     newE.stack = e.stack;
     /* istanbul ignore else: always get the hint from addErrorLoggingToSchema */
     if (hint) {
-      newE['originalMessage'] = e.message;
+      newE["originalMessage"] = e.message;
       newE.message = `Error in resolver ${hint}\n${e.message}`;
     }
     logger.log(newE);
@@ -29,7 +29,11 @@ export function decorateWithLogger(
     try {
       const result = resolver(root, args, ctx, info);
       // If the resolver returns a Promise log any Promise rejects.
-      if (result && typeof result.then === 'function' && typeof result.catch === 'function') {
+      if (
+        result &&
+        typeof result.then === "function" &&
+        typeof result.catch === "function"
+      ) {
         result.catch((reason: Error | string) => {
           // make sure that it's an error we're logging.
           const error = reason instanceof Error ? reason : new Error(reason);

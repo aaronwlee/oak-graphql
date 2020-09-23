@@ -1,7 +1,7 @@
 import { buildClientSchema, parse } from "../../deps.ts";
 // import { GraphQLSchemaValidationOptions } from 'graphql/type/schema';
 import { printSchemaWithDirectives } from "./print-schema-with-directives.ts";
-import { Source } from "./loaders.ts";
+import type { Source } from "./loaders.ts";
 import type { SchemaPrintOptions } from "./types.ts";
 
 function stripBOM(content: string): string {

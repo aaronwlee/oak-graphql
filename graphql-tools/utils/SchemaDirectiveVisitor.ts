@@ -2,7 +2,7 @@ import { valueFromASTUntyped } from "../../deps.ts";
 
 import type { VisitableSchemaType } from "./Interfaces.ts";
 
-import type { SchemaVisitor } from "./SchemaVisitor.ts";
+import { SchemaVisitor } from "./SchemaVisitor.ts";
 import { visitSchema } from "./visitSchema.ts";
 import { getArgumentValues } from "./getArgumentValues.ts";
 
