@@ -21,7 +21,7 @@ import {
 } from "../../deps.ts";
 
 import { getBuiltInForStub, isNamedStub } from './stub.ts';
-import { TypeMap } from './Interfaces.ts';
+import type { TypeMap } from './Interfaces.ts';
 
 export function rewireTypes(
   originalTypeMap: Record<string, any | null>,

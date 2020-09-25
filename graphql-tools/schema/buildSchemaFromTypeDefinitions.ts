@@ -1,6 +1,6 @@
-import { parse, extendSchema, buildASTSchema, GraphQLSchema, } from "../../deps.ts";
+import { parse, extendSchema, buildASTSchema } from "../../deps.ts";
 
-import { ITypeDefinitions, GraphQLParseOptions } from '../utils/index.ts';
+import type { ITypeDefinitions, GraphQLParseOptions } from '../utils/index.ts';
 
 import { extractExtensionDefinitions, filterExtensionDefinitions } from './extensionDefinitions.ts';
 import { concatenateTypeDefs } from './concatenateTypeDefs.ts';

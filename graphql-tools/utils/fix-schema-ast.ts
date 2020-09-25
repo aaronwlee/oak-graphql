@@ -1,5 +1,5 @@
 import { buildSchema } from "../../deps.ts";
-import { SchemaPrintOptions } from './types.ts';
+import type { SchemaPrintOptions } from './types.ts';
 import { printSchemaWithDirectives } from './print-schema-with-directives.ts';
 
 function buildFixedSchema(schema: any, options: any & SchemaPrintOptions) {

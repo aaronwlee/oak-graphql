@@ -7,7 +7,7 @@ import {
   isScalarType,
   parse,
 } from "../../deps.ts";
-import { SchemaPrintOptions } from './types.ts';
+import type { SchemaPrintOptions } from './types.ts';
 import { createSchemaDefinition } from './create-schema-definition.ts';
 
 export function printSchemaWithDirectives(schema: any, _options: SchemaPrintOptions = {}): string {

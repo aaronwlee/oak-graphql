@@ -1,6 +1,4 @@
-import { GraphQLSchema } from "../../deps.ts";
-
-import { Request, Transform } from './Interfaces.ts';
+import type { Request, Transform } from './Interfaces.ts';
 
 import { cloneSchema } from './clone.ts';
 

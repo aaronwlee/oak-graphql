@@ -1,5 +1,5 @@
 import { defaultFieldResolver } from "../../deps.ts";
-import { ILogger } from './types.ts';
+import type { ILogger } from './types.ts';
 
 /*
  * fn: The function to decorate with the logger

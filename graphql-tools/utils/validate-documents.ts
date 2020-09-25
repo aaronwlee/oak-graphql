@@ -3,7 +3,7 @@ import {
   validate,
   specifiedRules,
 } from "../../deps.ts";
-import { Source } from './loaders.ts';
+import type { Source } from './loaders.ts';
 import { CombinedError } from './errors.ts';
 
 export type ValidationRule = (context: any) => any;

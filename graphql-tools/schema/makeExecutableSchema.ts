@@ -7,7 +7,7 @@ import { addSchemaLevelResolver } from './addSchemaLevelResolver.ts';
 import { buildSchemaFromTypeDefinitions } from './buildSchemaFromTypeDefinitions.ts';
 import { addErrorLoggingToSchema } from './addErrorLoggingToSchema.ts';
 import { addCatchUndefinedToSchema } from './addCatchUndefinedToSchema.ts';
-import { IExecutableSchemaDefinition } from './types.ts';
+import type { IExecutableSchemaDefinition } from './types.ts';
 
 export function makeExecutableSchema<TContext = any>({
   typeDefs,

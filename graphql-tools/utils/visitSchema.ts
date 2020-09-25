@@ -21,7 +21,7 @@ import {
 } from './Interfaces.ts';
 
 import { healSchema } from './heal.ts';
-import { SchemaVisitor } from './SchemaVisitor.ts';
+import type { SchemaVisitor } from './SchemaVisitor.ts';
 
 function isSchemaVisitor(obj: any): obj is SchemaVisitor {
   if ('schema' in obj && isSchema(obj.schema)) {

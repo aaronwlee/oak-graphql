@@ -7,7 +7,7 @@ import {
   isSpecifiedScalarType,
 } from "../../deps.ts";
 
-import { IResolvers } from './Interfaces.ts';
+import type { IResolvers } from './Interfaces.ts';
 
 import { cloneType } from './clone.ts';
 

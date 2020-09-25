@@ -1,4 +1,4 @@
-import { IResolvers, IObjectTypeResolver } from '../utils/index.ts';
+import type { IResolvers, IObjectTypeResolver } from '../utils/index.ts';
 
 export function extendResolversFromInterfaces(schema: any, resolvers: IResolvers): IResolvers {
   const typeNames = Object.keys({

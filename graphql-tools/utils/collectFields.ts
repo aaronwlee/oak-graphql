@@ -7,7 +7,7 @@ import {
   isAbstractType,
 } from "../../deps.ts";
 
-import { GraphQLExecutionContext } from './Interfaces.ts';
+import type { GraphQLExecutionContext } from './Interfaces.ts';
 
 /**
  * Given a selectionSet, adds all of the fields in that selection to

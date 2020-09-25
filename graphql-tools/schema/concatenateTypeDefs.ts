@@ -1,6 +1,6 @@
 import { print } from "../../deps.ts";
 
-import { ITypedef } from '../utils/index.ts';
+import type { ITypedef } from '../utils/index.ts';
 
 export function concatenateTypeDefs(typeDefinitionsAry: Array<ITypedef>, calledFunctionRefs = [] as any): string {
   let resolvedTypeDefinitions: Array<string> = [];

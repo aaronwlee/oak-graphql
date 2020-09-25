@@ -11,7 +11,7 @@ import {
   isNonNullType,
 } from "../../deps.ts";
 
-import { TypeMap } from './Interfaces.ts';
+import type { TypeMap } from './Interfaces.ts';
 
 // Update any references to named schema types that disagree with the named
 // types found in schema.getTypeMap().

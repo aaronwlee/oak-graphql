@@ -1,5 +1,5 @@
 import { $$asyncIterator } from "https://cdn.pika.dev/iterall@^1.3.0";
-import { PubSubEngine } from './pubsub-engine.ts';
+import type { PubSubEngine } from './pubsub-engine.ts';
 
 /**
  * A class for digesting PubSubEngine events via the new AsyncIterator interface.
