@@ -1,4 +1,4 @@
-import {
+import type {
   ITypeDefinitions,
   IResolvers,
   IResolverValidationOptions,
@@ -6,7 +6,7 @@ import {
   SchemaDirectiveVisitorClass,
   GraphQLParseOptions,
   SchemaTransform,
-} from '../utils/index.ts';
+} from "../utils/index.ts";
 
 export interface ILogger {
   log: (error: Error) => void;

@@ -1,10 +1,6 @@
-import {
-  Kind,
-  validate,
-  specifiedRules,
-} from "../../deps.ts";
-import { Source } from './loaders.ts';
-import { CombinedError } from './errors.ts';
+import { Kind, validate, specifiedRules } from "../../deps.ts";
+import type { Source } from "./loaders.ts";
+import { CombinedError } from "./errors.ts";
 
 export type ValidationRule = (context: any) => any;
 const DEFAULT_EFFECTIVE_RULES = createDefaultRules();
@@ -21,7 +17,7 @@ export async function validateGraphQlDocuments(
 ): Promise<ReadonlyArray<LoadDocumentError>> {
   const allFragments: any[] = [];
 
-  documentFiles.forEach(documentFile => {
+  documentFiles.forEach((documentFile) => {
     if (documentFile.document) {
       for (const definitionNode of documentFile.document.definitions) {
         if (definitionNode.kind === Kind.FRAGMENT_DEFINITION) {
@@ -37,10 +33,15 @@ export async function validateGraphQlDocuments(
     documentFiles.map(async (documentFile: any) => {
       const documentToValidate = {
         kind: Kind.DOCUMENT,
-        definitions: [...allFragments, ...documentFile.document.definitions].filter((definition, index, list) => {
+        definitions: [
+          ...allFragments,
+          ...documentFile.document.definitions,
+        ].filter((definition, index, list) => {
           if (definition.kind === Kind.FRAGMENT_DEFINITION) {
             const firstIndex = list.findIndex(
-              def => def.kind === Kind.FRAGMENT_DEFINITION && def.name.value === definition.name.value
+              (def) =>
+                def.kind === Kind.FRAGMENT_DEFINITION &&
+                def.name.value === definition.name.value
             );
             const isDuplicated = firstIndex !== index;
 
@@ -53,7 +54,11 @@ export async function validateGraphQlDocuments(
         }),
       };
 
-      const errors = (validate as any)(schema, documentToValidate, effectiveRules);
+      const errors = (validate as any)(
+        schema,
+        documentToValidate,
+        effectiveRules
+      );
 
       if (errors.length > 0) {
         allErrors.push({
@@ -67,18 +72,21 @@ export async function validateGraphQlDocuments(
   return allErrors;
 }
 
-export function checkValidationErrors(loadDocumentErrors: ReadonlyArray<LoadDocumentError>): void | never {
+export function checkValidationErrors(
+  loadDocumentErrors: ReadonlyArray<LoadDocumentError>
+): void | never {
   if (loadDocumentErrors.length > 0) {
     const errors: Error[] = [];
 
     for (const loadDocumentError of loadDocumentErrors) {
       for (const graphQLError of loadDocumentError.errors) {
         const error = new Error();
-        error.name = 'GraphQLDocumentError';
+        error.name = "GraphQLDocumentError";
         error.message = `${error.name}: ${graphQLError.message}`;
         error.stack = error.message;
         (graphQLError as any).locations.forEach(
-          (location: any) => (error.stack += `\n    at ${loadDocumentError.filePath}:${location.line}:${location.column}`)
+          (location: any) =>
+            (error.stack += `\n    at ${loadDocumentError.filePath}:${location.line}:${location.column}`)
         );
 
         errors.push(error);
@@ -90,13 +98,19 @@ export function checkValidationErrors(loadDocumentErrors: ReadonlyArray<LoadDocu
 }
 
 function createDefaultRules() {
-  const ignored = ['NoUnusedFragmentsRule', 'NoUnusedVariablesRule', 'KnownDirectivesRule'];
+  const ignored = [
+    "NoUnusedFragmentsRule",
+    "NoUnusedVariablesRule",
+    "KnownDirectivesRule",
+  ];
 
   // GraphQL v14 has no Rule suffix in function names
   // Adding `*Rule` makes validation backwards compatible
-  ignored.forEach(rule => {
-    ignored.push(rule.replace(/Rule$/, ''));
+  ignored.forEach((rule) => {
+    ignored.push(rule.replace(/Rule$/, ""));
   });
 
-  return specifiedRules.filter((f: (...args: any[]) => any) => !ignored.includes(f.name));
+  return specifiedRules.filter(
+    (f: (...args: any[]) => any) => !ignored.includes(f.name)
+  );
 }

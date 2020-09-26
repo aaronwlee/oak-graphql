@@ -7,7 +7,7 @@ import {
   isAbstractType,
 } from "../../deps.ts";
 
-import { GraphQLExecutionContext } from './Interfaces.ts';
+import type { GraphQLExecutionContext } from "./Interfaces.ts";
 
 /**
  * Given a selectionSet, adds all of the fields in that selection to
@@ -46,20 +46,38 @@ export function collectFields(
         ) {
           continue;
         }
-        collectFields(exeContext, runtimeType, selection.selectionSet, fields, visitedFragmentNames);
+        collectFields(
+          exeContext,
+          runtimeType,
+          selection.selectionSet,
+          fields,
+          visitedFragmentNames
+        );
         break;
       }
       case Kind.FRAGMENT_SPREAD: {
         const fragName = selection.name.value;
-        if (visitedFragmentNames[fragName] || !shouldIncludeNode(exeContext, selection)) {
+        if (
+          visitedFragmentNames[fragName] ||
+          !shouldIncludeNode(exeContext, selection)
+        ) {
           continue;
         }
         visitedFragmentNames[fragName] = true;
         const fragment = exeContext.fragments[fragName];
-        if (!fragment || !doesFragmentConditionMatch(exeContext, fragment, runtimeType)) {
+        if (
+          !fragment ||
+          !doesFragmentConditionMatch(exeContext, fragment, runtimeType)
+        ) {
           continue;
         }
-        collectFields(exeContext, runtimeType, fragment.selectionSet, fields, visitedFragmentNames);
+        collectFields(
+          exeContext,
+          runtimeType,
+          fragment.selectionSet,
+          fields,
+          visitedFragmentNames
+        );
         break;
       }
     }
@@ -75,13 +93,21 @@ function shouldIncludeNode(
   exeContext: GraphQLExecutionContext,
   node: any
 ): boolean {
-  const skip: any = getDirectiveValues(GraphQLSkipDirective, node, exeContext.variableValues);
+  const skip: any = getDirectiveValues(
+    GraphQLSkipDirective,
+    node,
+    exeContext.variableValues
+  );
 
   if (skip?.if === true) {
     return false;
   }
 
-  const include: any = getDirectiveValues(GraphQLIncludeDirective, node, exeContext.variableValues);
+  const include: any = getDirectiveValues(
+    GraphQLIncludeDirective,
+    node,
+    exeContext.variableValues
+  );
 
   if (include?.if === false) {
     return false;

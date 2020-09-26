@@ -1,5 +1,5 @@
 import { $$asyncIterator } from "https://cdn.pika.dev/iterall@^1.3.0";
-import { PubSubEngine } from './pubsub-engine.ts';
+import type { PubSubEngine } from "./pubsub-engine.ts";
 
 /**
  * A class for digesting PubSubEngine events via the new AsyncIterator interface.
@@ -34,7 +34,6 @@ import { PubSubEngine } from './pubsub-engine.ts';
  * The PubSubEngine whose events will be observed.
  */
 export class PubSubAsyncIterator<T> implements AsyncIterator<T> {
-
   private pullQueue: ((value: IteratorResult<T>) => void)[];
   private pushQueue: T[];
   private eventsArray: string[];
@@ -48,11 +47,14 @@ export class PubSubAsyncIterator<T> implements AsyncIterator<T> {
     this.pushQueue = [];
     this.running = true;
     this.allSubscribed = null;
-    this.eventsArray = typeof eventNames === 'string' ? [eventNames] : eventNames;
+    this.eventsArray =
+      typeof eventNames === "string" ? [eventNames] : eventNames;
   }
 
   public async next(): Promise<IteratorResult<T>> {
-    if (!this.allSubscribed) { await (this.allSubscribed = this.subscribeAll()); }
+    if (!this.allSubscribed) {
+      await (this.allSubscribed = this.subscribeAll());
+    }
     return this.pullValue();
   }
 
@@ -73,9 +75,10 @@ export class PubSubAsyncIterator<T> implements AsyncIterator<T> {
   private async pushValue(event: T) {
     await this.allSubscribed;
     if (this.pullQueue.length !== 0) {
-      (this.pullQueue as any).shift()(this.running
-        ? { value: event, done: false }
-        : { value: undefined, done: true },
+      (this.pullQueue as any).shift()(
+        this.running
+          ? { value: event, done: false }
+          : { value: undefined, done: true }
       );
     } else {
       this.pushQueue.push(event);
@@ -83,35 +86,40 @@ export class PubSubAsyncIterator<T> implements AsyncIterator<T> {
   }
 
   private pullValue(): Promise<IteratorResult<T>> {
-    return new Promise(
-      resolve => {
-        if (this.pushQueue.length !== 0) {
-          resolve(this.running
-            ? { value: this.pushQueue.shift(), done: false } as any
-            : { value: undefined, done: true },
-          );
-        } else {
-          this.pullQueue.push(resolve);
-        }
-      },
-    );
+    return new Promise((resolve) => {
+      if (this.pushQueue.length !== 0) {
+        resolve(
+          this.running
+            ? ({ value: this.pushQueue.shift(), done: false } as any)
+            : { value: undefined, done: true }
+        );
+      } else {
+        this.pullQueue.push(resolve);
+      }
+    });
   }
 
   private async emptyQueue() {
     if (this.running) {
       this.running = false;
-      this.pullQueue.forEach(resolve => resolve({ value: undefined, done: true }));
+      this.pullQueue.forEach((resolve) =>
+        resolve({ value: undefined, done: true })
+      );
       this.pullQueue.length = 0;
       this.pushQueue.length = 0;
       const subscriptionIds = await this.allSubscribed;
-      if (subscriptionIds) { this.unsubscribeAll(subscriptionIds); }
+      if (subscriptionIds) {
+        this.unsubscribeAll(subscriptionIds);
+      }
     }
   }
 
   private subscribeAll() {
-    return Promise.all(this.eventsArray.map(
-      eventName => this.pubsub.subscribe(eventName, this.pushValue.bind(this), {}),
-    ));
+    return Promise.all(
+      this.eventsArray.map((eventName) =>
+        this.pubsub.subscribe(eventName, this.pushValue.bind(this), {})
+      )
+    );
   }
 
   private unsubscribeAll(subscriptionIds: number[]) {
@@ -119,5 +127,4 @@ export class PubSubAsyncIterator<T> implements AsyncIterator<T> {
       this.pubsub.unsubscribe(subscriptionId);
     }
   }
-
 }

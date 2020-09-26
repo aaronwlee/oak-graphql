@@ -1,6 +1,6 @@
 import { buildSchema } from "../../deps.ts";
-import { SchemaPrintOptions } from './types.ts';
-import { printSchemaWithDirectives } from './print-schema-with-directives.ts';
+import type { SchemaPrintOptions } from "./types.ts";
+import { printSchemaWithDirectives } from "./print-schema-with-directives.ts";
 
 function buildFixedSchema(schema: any, options: any & SchemaPrintOptions) {
   return buildSchema(printSchemaWithDirectives(schema, options), {
@@ -12,7 +12,7 @@ function buildFixedSchema(schema: any, options: any & SchemaPrintOptions) {
 export function fixSchemaAst(schema: any, options: any & SchemaPrintOptions) {
   let schemaWithValidAst: any;
   if (!schema.astNode) {
-    Object.defineProperty(schema, 'astNode', {
+    Object.defineProperty(schema, "astNode", {
       get() {
         if (!schemaWithValidAst) {
           schemaWithValidAst = buildFixedSchema(schema, options);
@@ -22,7 +22,7 @@ export function fixSchemaAst(schema: any, options: any & SchemaPrintOptions) {
     });
   }
   if (!schema.extensionASTNodes) {
-    Object.defineProperty(schema, 'extensionASTNodes', {
+    Object.defineProperty(schema, "extensionASTNodes", {
       get() {
         if (!schemaWithValidAst) {
           schemaWithValidAst = buildFixedSchema(schema, options);

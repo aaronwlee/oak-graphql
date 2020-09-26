@@ -18,14 +18,14 @@ import {
   VisitSchemaKind,
   NamedTypeVisitor,
   SchemaVisitorMap,
-} from './Interfaces.ts';
+} from "./Interfaces.ts";
 
-import { healSchema } from './heal.ts';
-import { SchemaVisitor } from './SchemaVisitor.ts';
+import { healSchema } from "./heal.ts";
+import type { SchemaVisitor } from "./SchemaVisitor.ts";
 
 function isSchemaVisitor(obj: any): obj is SchemaVisitor {
-  if ('schema' in obj && isSchema(obj.schema)) {
-    if ('visitSchema' in obj && typeof obj.visitSchema === 'function') {
+  if ("schema" in obj && isSchema(obj.schema)) {
+    if ("visitSchema" in obj && typeof obj.visitSchema === "function") {
       return true;
     }
   }
@@ -48,14 +48,24 @@ export function visitSchema(
   // applied to the given VisitableSchemaType object. For an example of a
   // visitor pattern that benefits from this abstraction, see the
   // SchemaDirectiveVisitor class below.
-  visitorOrVisitorSelector: VisitorSelector | Array<SchemaVisitor | SchemaVisitorMap> | SchemaVisitor | SchemaVisitorMap
+  visitorOrVisitorSelector:
+    | VisitorSelector
+    | Array<SchemaVisitor | SchemaVisitorMap>
+    | SchemaVisitor
+    | SchemaVisitorMap
 ): typeof GraphQLSchema {
   const visitorSelector =
-    typeof visitorOrVisitorSelector === 'function' ? visitorOrVisitorSelector : () => visitorOrVisitorSelector;
+    typeof visitorOrVisitorSelector === "function"
+      ? visitorOrVisitorSelector
+      : () => visitorOrVisitorSelector;
 
   // Helper function that calls visitorSelector and applies the resulting
   // visitors to the given type, with arguments [type, ...args].
-  function callMethod<T extends VisitableSchemaType>(methodName: string, type: T, ...args: Array<any>): T | null {
+  function callMethod<T extends VisitableSchemaType>(
+    methodName: string,
+    type: T,
+    ...args: Array<any>
+  ): T | null {
     let visitors: any = visitorSelector(type, methodName);
     visitors = Array.isArray(visitors) ? visitors : [visitors];
 
@@ -66,25 +76,28 @@ export function visitSchema(
         newType = (visitorOrVisitorDef as any)[methodName](finalType, ...args);
       } else if (
         isNamedType(finalType) &&
-        (methodName === 'visitScalar' ||
-          methodName === 'visitEnum' ||
-          methodName === 'visitObject' ||
-          methodName === 'visitInputObject' ||
-          methodName === 'visitUnion' ||
-          methodName === 'visitInterface')
+        (methodName === "visitScalar" ||
+          methodName === "visitEnum" ||
+          methodName === "visitObject" ||
+          methodName === "visitInputObject" ||
+          methodName === "visitUnion" ||
+          methodName === "visitInterface")
       ) {
         const specifiers = getTypeSpecifiers(finalType, schema);
         const typeVisitor = getVisitor(visitorOrVisitorDef, specifiers);
-        newType = typeVisitor != null ? typeVisitor(finalType, schema) : undefined;
+        newType =
+          typeVisitor != null ? typeVisitor(finalType, schema) : undefined;
       }
 
-      if (typeof newType === 'undefined') {
+      if (typeof newType === "undefined") {
         // Keep going without modifying type.
         return true;
       }
 
-      if (methodName === 'visitSchema' || isSchema(finalType)) {
-        throw new Error(`Method ${methodName} cannot replace schema with ${newType as string}`);
+      if (methodName === "visitSchema" || isSchema(finalType)) {
+        throw new Error(
+          `Method ${methodName} cannot replace schema with ${newType as string}`
+        );
       }
 
       if (newType === null) {
@@ -113,11 +126,11 @@ export function visitSchema(
       // Unlike the other types, the root GraphQLSchema object cannot be
       // replaced by visitor methods, because that would make life very hard
       // for SchemaVisitor subclasses that rely on the original schema object.
-      callMethod('visitSchema', type);
+      callMethod("visitSchema", type);
 
       const typeMap: Record<string, any | null> = (type as any).getTypeMap();
       Object.entries(typeMap).forEach(([typeName, namedType]) => {
-        if (!typeName.startsWith('__') && namedType != null) {
+        if (!typeName.startsWith("__") && namedType != null) {
           // Call visit recursively to let it determine which concrete
           // subclass of GraphQLNamedType we found in the type map.
           // We do not use updateEachKey because we want to preserve
@@ -135,7 +148,7 @@ export function visitSchema(
       // methods, if there are no @directive annotations associated with this
       // type, or if this SchemaDirectiveVisitor subclass does not override
       // the visitObject method.
-      const newObject: any = callMethod('visitObject', type);
+      const newObject: any = callMethod("visitObject", type);
       if (newObject != null) {
         visitFields(newObject);
       }
@@ -143,7 +156,7 @@ export function visitSchema(
     }
 
     if (isInterfaceType(type)) {
-      const newInterface: any = callMethod('visitInterface', type);
+      const newInterface: any = callMethod("visitInterface", type);
       if (newInterface != null) {
         visitFields(newInterface);
       }
@@ -151,16 +164,23 @@ export function visitSchema(
     }
 
     if (isInputObjectType(type)) {
-      const newInputObject = callMethod('visitInputObject', type);
+      const newInputObject = callMethod("visitInputObject", type);
 
       if (newInputObject != null) {
-        const fieldMap: any = (newInputObject as any).getFields() as Record<string, any>;
+        const fieldMap: any = (newInputObject as any).getFields() as Record<
+          string,
+          any
+        >;
         for (const key of Object.keys(fieldMap)) {
-          fieldMap[key] = callMethod('visitInputFieldDefinition', fieldMap[key], {
-            // Since we call a different method for input object fields, we
-            // can't reuse the visitFields function here.
-            objectType: newInputObject,
-          });
+          fieldMap[key] = callMethod(
+            "visitInputFieldDefinition",
+            fieldMap[key],
+            {
+              // Since we call a different method for input object fields, we
+              // can't reuse the visitFields function here.
+              objectType: newInputObject,
+            }
+          );
           if (!fieldMap[key]) {
             delete fieldMap[key];
           }
@@ -171,28 +191,30 @@ export function visitSchema(
     }
 
     if (isScalarType(type)) {
-      return callMethod('visitScalar', type);
+      return callMethod("visitScalar", type);
     }
 
     if (isUnionType(type)) {
-      return callMethod('visitUnion', type);
+      return callMethod("visitUnion", type);
     }
 
     if (isEnumType(type)) {
-      let newEnum: any = callMethod('visitEnum', type);
+      let newEnum: any = callMethod("visitEnum", type);
 
       if (newEnum != null) {
         const newValues: Array<any> = newEnum
           .getValues()
           .map((value: any) =>
-            callMethod('visitEnumValue', value, {
+            callMethod("visitEnumValue", value, {
               enumType: newEnum,
             })
           )
           .filter(Boolean);
 
         // Recreate the enum type if any of the values changed
-        const valuesUpdated = newValues.some((value, index) => value !== newEnum.getValues()[index]);
+        const valuesUpdated = newValues.some(
+          (value, index) => value !== newEnum.getValues()[index]
+        );
         if (valuesUpdated) {
           newEnum = new (GraphQLEnumType as any)({
             ...(newEnum as any).toConfig(),
@@ -226,7 +248,7 @@ export function visitSchema(
       // an instanceof check, so we have to visit the fields in this lexical
       // context, so that TypeScript can validate the call to
       // visitFieldDefinition.
-      const newField: any = callMethod('visitFieldDefinition', field, {
+      const newField: any = callMethod("visitFieldDefinition", field, {
         // While any field visitor needs a reference to the field object, some
         // field visitors may also need to know the enclosing (parent) type,
         // perhaps to determine if the parent is a GraphQLObjectType or a
@@ -239,7 +261,7 @@ export function visitSchema(
       if (newField.args != null) {
         newField.args = newField.args
           .map((arg: any) =>
-            callMethod('visitArgumentDefinition', arg, {
+            callMethod("visitArgumentDefinition", arg, {
               // Like visitFieldDefinition, visitArgumentDefinition takes a
               // second parameter that provides additional context, namely the
               // parent .field and grandparent .objectType. Remember that the
@@ -273,7 +295,10 @@ export function visitSchema(
 function getTypeSpecifiers(type: any, schema: any): Array<VisitSchemaKind> {
   const specifiers = [VisitSchemaKind.TYPE];
   if (isObjectType(type)) {
-    specifiers.push(VisitSchemaKind.COMPOSITE_TYPE, VisitSchemaKind.OBJECT_TYPE);
+    specifiers.push(
+      VisitSchemaKind.COMPOSITE_TYPE,
+      VisitSchemaKind.OBJECT_TYPE
+    );
     const query = schema.getQueryType();
     const mutation = schema.getMutationType();
     const subscription = schema.getSubscriptionType();
@@ -282,14 +307,25 @@ function getTypeSpecifiers(type: any, schema: any): Array<VisitSchemaKind> {
     } else if (type === mutation) {
       specifiers.push(VisitSchemaKind.ROOT_OBJECT, VisitSchemaKind.MUTATION);
     } else if (type === subscription) {
-      specifiers.push(VisitSchemaKind.ROOT_OBJECT, VisitSchemaKind.SUBSCRIPTION);
+      specifiers.push(
+        VisitSchemaKind.ROOT_OBJECT,
+        VisitSchemaKind.SUBSCRIPTION
+      );
     }
   } else if (isInputType(type)) {
     specifiers.push(VisitSchemaKind.INPUT_OBJECT_TYPE);
   } else if (isInterfaceType(type)) {
-    specifiers.push(VisitSchemaKind.COMPOSITE_TYPE, VisitSchemaKind.ABSTRACT_TYPE, VisitSchemaKind.INTERFACE_TYPE);
+    specifiers.push(
+      VisitSchemaKind.COMPOSITE_TYPE,
+      VisitSchemaKind.ABSTRACT_TYPE,
+      VisitSchemaKind.INTERFACE_TYPE
+    );
   } else if (isUnionType(type)) {
-    specifiers.push(VisitSchemaKind.COMPOSITE_TYPE, VisitSchemaKind.ABSTRACT_TYPE, VisitSchemaKind.UNION_TYPE);
+    specifiers.push(
+      VisitSchemaKind.COMPOSITE_TYPE,
+      VisitSchemaKind.ABSTRACT_TYPE,
+      VisitSchemaKind.UNION_TYPE
+    );
   } else if (isEnumType(type)) {
     specifiers.push(VisitSchemaKind.ENUM_TYPE);
   } else if (isScalarType(type)) {
@@ -299,12 +335,15 @@ function getTypeSpecifiers(type: any, schema: any): Array<VisitSchemaKind> {
   return specifiers;
 }
 
-function getVisitor(visitorDef: SchemaVisitorMap, specifiers: Array<VisitSchemaKind>): NamedTypeVisitor | null {
+function getVisitor(
+  visitorDef: SchemaVisitorMap,
+  specifiers: Array<VisitSchemaKind>
+): NamedTypeVisitor | null {
   let typeVisitor: NamedTypeVisitor | undefined;
   const stack = [...specifiers];
   while (!typeVisitor && stack.length > 0) {
     const next = stack.pop();
-    typeVisitor = next && visitorDef[next] as NamedTypeVisitor;
+    typeVisitor = next && (visitorDef[next] as NamedTypeVisitor);
   }
 
   return typeVisitor != null ? typeVisitor : null;

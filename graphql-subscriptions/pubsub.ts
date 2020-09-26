@@ -1,5 +1,5 @@
-import { EventEmitter } from 'https://deno.land/std/node/events.ts';
-import { PubSubEngine } from './pubsub-engine.ts';
+import { EventEmitter } from "https://deno.land/std@0.69.0/node/events.ts";
+import { PubSubEngine } from "./pubsub-engine.ts";
 
 export interface PubSubOptions {
   eventEmitter?: EventEmitter;
@@ -22,7 +22,10 @@ export class PubSub extends PubSubEngine {
     return Promise.resolve();
   }
 
-  public subscribe(triggerName: string, onMessage: (...args: any[]) => void): Promise<number> {
+  public subscribe(
+    triggerName: string,
+    onMessage: (...args: any[]) => void
+  ): Promise<number> {
     this.ee.addListener(triggerName, onMessage);
     this.subIdCounter = this.subIdCounter + 1;
     this.subscriptions[this.subIdCounter] = [triggerName, onMessage];
