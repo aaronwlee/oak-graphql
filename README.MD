@@ -137,7 +137,7 @@ const resolvers = {
 }
 ```
 > The resolvers will be received these four parameters
-> - parents: The return value of the resolver for this field's parent
+> - parent: The return value of the resolver for this field's parent
 > - args: An object that contains all GraphQL arguments provided for this field.
 > - context: An object shared across all resolvers that are executing for a particular operation.
 > - info: Contains information about the operation's execution state, including the field name, the path to the field from the root, and more.
