@@ -1,0 +1,10 @@
+{
+                                "name": "oak_graphql",
+                                "description": "A simple graphql middleware for oak deno framework.",
+                                "homepage": "https://github.com/aaronwlee/oak-graphql",
+                                "files": [
+                                  "./**/*.ts",
+                                  "README.md"
+                                ],
+                                "entry": "./mod.ts"
+                              }
