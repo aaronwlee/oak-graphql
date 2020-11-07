@@ -141,3 +141,4 @@ export {
 // } from "https://raw.githubusercontent.com/graphql/graphql-js/deno/index.d.ts"
 
 export { PubSub } from "./graphql-subscriptions/index.ts";
+export { MultipartReader } from "https://deno.land/std@0.76.0/mime/multipart.ts";
