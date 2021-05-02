@@ -1,10 +1,11 @@
 import { graphql, gql } from "./deps.ts";
 import { renderPlaygroundPage } from "./graphql-playground-html/render-playground-html.ts";
 import { makeExecutableSchema } from "./graphql-tools/schema/makeExecutableSchema.ts";
+import { IExecutableSchemaDefinition } from "./graphql-tools/schema/types.ts";
 import { fileUploadMiddleware, GraphQLUpload } from "./fileUpload.ts";
 
 interface Constructable<T> {
-  new (...args: any): T & OakRouter;
+  new(...args: any): T & OakRouter;
 }
 
 interface OakRouter {
@@ -12,11 +13,20 @@ interface OakRouter {
   get: any;
 }
 
-export interface ApplyGraphQLOptions<T> {
+export type ApplyGraphQLOptions<T> = {
   Router: Constructable<T>;
   path?: string;
+  executableSchema?: IExecutableSchemaDefinition;
   typeDefs: any;
   resolvers: ResolversProps;
+  context?: (ctx: any) => any;
+  usePlayground?: boolean;
+} | {
+  Router: Constructable<T>;
+  path?: string;
+  executableSchema: IExecutableSchemaDefinition;
+  typeDefs?: any;
+  resolvers?: ResolversProps;
   context?: (ctx: any) => any;
   usePlayground?: boolean;
 }
@@ -30,6 +40,7 @@ export interface ResolversProps {
 export async function applyGraphQL<T>({
   Router,
   path = "/graphql",
+  executableSchema,
   typeDefs,
   resolvers,
   context,
@@ -37,26 +48,29 @@ export async function applyGraphQL<T>({
 }: ApplyGraphQLOptions<T>): Promise<T> {
   const router = new Router();
 
-  const augmentedTypeDefs = Array.isArray(typeDefs) ? typeDefs : [typeDefs];
-  augmentedTypeDefs.push(
-    gql`
+  let schema: IExecutableSchemaDefinition | undefined = executableSchema;
+  if (!executableSchema) {
+    const augmentedTypeDefs = Array.isArray(typeDefs) ? typeDefs : [typeDefs];
+    augmentedTypeDefs.push(
+      gql`
       scalar Upload
     `
-  );
-  if (Array.isArray(resolvers)) {
-    if (resolvers.every((resolver) => !resolver.Upload)) {
-      resolvers.push({ Upload: GraphQLUpload });
+    );
+    if (Array.isArray(resolvers)) {
+      if (resolvers.every((resolver) => !resolver.Upload)) {
+        resolvers.push({ Upload: GraphQLUpload });
+      }
+    } else {
+      if (resolvers && !resolvers.Upload) {
+        resolvers.Upload = GraphQLUpload;
+      }
     }
-  } else {
-    if (resolvers && !resolvers.Upload) {
-      resolvers.Upload = GraphQLUpload;
-    }
-  }
 
-  const schema = makeExecutableSchema({
-    typeDefs: augmentedTypeDefs,
-    resolvers: [resolvers],
-  });
+    schema = makeExecutableSchema({
+      typeDefs: augmentedTypeDefs,
+      resolvers: [resolvers],
+    });
+  }
 
   await router.post(path, fileUploadMiddleware, async (ctx: any) => {
     const { response, request } = ctx;
