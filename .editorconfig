@@ -1,0 +1,6 @@
+root = true
+
+[*.ts]
+ij_typescript_align_multiline_parameters = false
+ij_typescript_blank_lines_around_method_in_interface = 0
+ij_typescript_spaces_within_array_initializer_brackets = false
