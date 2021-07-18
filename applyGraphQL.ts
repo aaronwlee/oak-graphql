@@ -2,6 +2,7 @@ import { graphql, gql } from "./deps.ts";
 import { renderPlaygroundPage } from "./graphql-playground-html/render-playground-html.ts";
 import { makeExecutableSchema } from "./graphql-tools/schema/makeExecutableSchema.ts";
 import { fileUploadMiddleware, GraphQLUpload } from "./fileUpload.ts";
+import { SchemaTransform } from "./graphql-tools/utils/index.ts"
 
 interface Constructable<T> {
   new (...args: any): T & OakRouter;
@@ -19,6 +20,7 @@ export interface ApplyGraphQLOptions<T> {
   resolvers: ResolversProps;
   context?: (ctx: any) => any;
   usePlayground?: boolean;
+  schemaTransforms?: SchemaTransform[]
 }
 
 export interface ResolversProps {
@@ -34,6 +36,7 @@ export async function applyGraphQL<T>({
   resolvers,
   context,
   usePlayground = true,
+  schemaTransforms = []
 }: ApplyGraphQLOptions<T>): Promise<T> {
   const router = new Router();
 
@@ -56,6 +59,7 @@ export async function applyGraphQL<T>({
   const schema = makeExecutableSchema({
     typeDefs: augmentedTypeDefs,
     resolvers: [resolvers],
+    schemaTransforms
   });
 
   await router.post(path, fileUploadMiddleware, async (ctx: any) => {
