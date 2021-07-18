@@ -1,3 +1,21 @@
+# Read Me
+Hello, it's Aaron.
+Firstly, I'd like to say thanks for using and loving ```oak-graphql.```
+
+Unfortunately, it is nearly impossible to maintain ```oak-graphql.``` because I'm currently serving in the military. It means ```oak-graphql.``` is no longer supported by the author at least until 2022 Nov.
+
+Thus, I need some help! If someone wants to maintain it, please don't hesitate to give me an email.
+I want someone can have permission who update and push it to ```deno.land/x```.
+
+I hope y'all are doing well in this bad situation.
+
+Regards<br>
+Aaron Wooseok Lee<br>
+18-July-2021<br>
+<a href="mailto:aaronwoolee95@gmail.com">aaronwoolee95@gmail.com</a>
+
+
+
 # Oak-GraphQL
 [![nest badge](https://nest.land/badge.svg)](https://nest.land/package/oak-graphql)
 
