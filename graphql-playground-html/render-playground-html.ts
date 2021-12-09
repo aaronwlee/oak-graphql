@@ -16,15 +16,15 @@ export type CursorShape = 'line' | 'block' | 'underline'
 export type Theme = 'dark' | 'light'
 
 export interface ISettings {
-  'general.betaUpdates': boolean
-  'editor.cursorShape': CursorShape
-  'editor.theme': Theme
-  'editor.reuseHeaders': boolean
-  'tracing.hideTracingResponse': boolean
-  'tracing.tracingSupported': boolean
-  'editor.fontSize': number
-  'editor.fontFamily': string
-  'request.credentials': string
+  'general.betaUpdates'?: boolean
+  'editor.cursorShape'?: CursorShape
+  'editor.theme'?: Theme
+  'editor.reuseHeaders'?: boolean
+  'tracing.hideTracingResponse'?: boolean
+  'tracing.tracingSupported'?: boolean
+  'editor.fontSize'?: number
+  'editor.fontFamily'?: string
+  'request.credentials'?: string
 }
 
 export interface EditorColours {

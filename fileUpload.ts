@@ -4,7 +4,7 @@ import { GraphQLScalarType, MultipartReader } from "./deps.ts";
 export const GraphQLUpload = new GraphQLScalarType({
   name: "Upload",
   description: "The `Upload` scalar type represents a file upload.",
-  parseValue: (value) => value,
+  parseValue: (value: any) => value,
 
   parseLiteral() {
     throw new Error("`Upload` scalar literal unsupported.");

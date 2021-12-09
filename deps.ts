@@ -64,7 +64,7 @@ export {
   isCompositeType,
   execute,
   subscribe,
-} from "https://cdn.pika.dev/graphql@15.0.0";
+} from "https://cdn.pika.dev/graphql@15.6.1";
 
 // export {
 //   GraphQLFieldConfig,
@@ -141,4 +141,4 @@ export {
 // } from "https://raw.githubusercontent.com/graphql/graphql-js/deno/index.d.ts"
 
 export { PubSub } from "./graphql-subscriptions/index.ts";
-export { MultipartReader } from "https://deno.land/std@0.76.0/mime/multipart.ts";
+export { MultipartReader } from "https://deno.land/std@0.110.0/mime/multipart.ts";
