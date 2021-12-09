@@ -1,4 +1,3 @@
-import { RouterContext } from "https://deno.land/x/oak@v6.2.0/mod.ts";
 import { GraphQLScalarType, MultipartReader } from "./deps.ts";
 
 export const GraphQLUpload = new GraphQLScalarType({
@@ -31,7 +30,7 @@ const setPath = (object: any, path: string[], value: any) => {
   }
 };
 
-export const fileUploadMiddleware = async (ctx: RouterContext, next: any) => {
+export const fileUploadMiddleware = async (ctx: any, next: any) => {
   const boundaryRegex = /^multipart\/form-data;\sboundary=(?<boundary>.*)$/;
   const contentType = ctx.request.headers.get("content-type");
   const match = contentType && contentType.match(boundaryRegex);

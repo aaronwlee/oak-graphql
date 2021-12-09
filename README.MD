@@ -15,7 +15,6 @@ Aaron Wooseok Lee<br>
 <a href="mailto:aaronwoolee95@gmail.com">aaronwoolee95@gmail.com</a>
 
 
-
 # Oak-GraphQL
 [![nest badge](https://nest.land/badge.svg)](https://nest.land/package/oak-graphql)
 
@@ -27,11 +26,13 @@ A simple graphql middleware for oak deno framework.
 
 ![alt text](https://github.com/aaronwlee/oak_graphql/blob/master/mustsame.JPG?raw=true "Oak-GraphQL")
 
+## Simple run
+deno run --allow-net --unstable index.ts
 
-## Simple example
+## Simple example index.ts
 ```ts
 
-import { Application, Router, RouterContext } from "https://deno.land/x/oak@v6.2.0/mod.ts";
+import { Application, Router } from "https://deno.land/x/oak@v10.0.0/mod.ts";
 import { applyGraphQL, gql, GQLError } from "https://deno.land/x/oak_graphql/mod.ts";
 
 const app = new Application();
@@ -100,7 +101,8 @@ const GraphQLService = await applyGraphQL<Router>({
   Router,
   typeDefs: types,
   resolvers: resolvers,
-  context: (ctx: RouterContext) => {
+  context: (ctx) => {
+  	// this line is for passing a user context for the auth
     return { user: "Aaron" };
   }
 })
