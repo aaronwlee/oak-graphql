@@ -1,4 +1,4 @@
-export { default as gql } from "./graphql-tag/index.ts"
+export { default as gql } from "./graphql-tag/index.ts";
 
 // @ts-nocheck
 export {
@@ -141,4 +141,4 @@ export {
 // } from "https://raw.githubusercontent.com/graphql/graphql-js/deno/index.d.ts"
 
 export { PubSub } from "./graphql-subscriptions/index.ts";
-export { MultipartReader } from "https://deno.land/std/mime/multipart.ts";
+export { MultipartReader } from "https://deno.land/std@0.143.0/mime/multipart.ts";
