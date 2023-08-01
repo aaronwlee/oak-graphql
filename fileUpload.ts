@@ -1,4 +1,4 @@
-import { GraphQLScalarType, MultipartReader } from "./deps.ts";
+import { GraphQLScalarType, FormData } from "./deps.ts";
 
 export const GraphQLUpload = new GraphQLScalarType({
   name: "Upload",
@@ -14,7 +14,7 @@ export const GraphQLUpload = new GraphQLScalarType({
   },
 });
 
-const isMultipart = (contentType: string) => {};
+// const isMultipart = (contentType: string) => {};
 
 const setPath = (object: any, path: string[], value: any) => {
   console.log("setPath", object, path, value);
@@ -36,19 +36,10 @@ export const fileUploadMiddleware = async (ctx: any, next: any) => {
   const match = contentType && contentType.match(boundaryRegex);
   if (match) {
     const formBoundary = match.groups!.boundary;
-    const mr = new MultipartReader(
-      ctx.request.serverRequest.body,
-      formBoundary
-    );
+    const formBody = ctx.request.serverRequest.body;
     try {
-      let entries = [];
-      try {
-        const form = await mr.readForm();
-        entries = Array.from(form.entries());
-      } catch (e) {
-        throw new Error("Error parsing multipart");
-      }
-
+      const formData = await FormData.parse(formBody, formBoundary);
+      const entries = Array.from(formData.entries()) as [string, string][];
       const operationsEntry = entries.find(
         (entry) => entry[0] === "operations"
       );
