@@ -1,4 +1,4 @@
-import { GraphQLScalarType, MultipartReader } from "./deps.ts";
+import { GraphQLScalarType } from "./deps.ts";
 
 export const GraphQLUpload = new GraphQLScalarType({
   name: "Upload",
@@ -14,7 +14,7 @@ export const GraphQLUpload = new GraphQLScalarType({
   },
 });
 
-const isMultipart = (contentType: string) => {};
+// const isMultipart = (contentType: string) => {};
 
 const setPath = (object: any, path: string[], value: any) => {
   console.log("setPath", object, path, value);
@@ -30,52 +30,60 @@ const setPath = (object: any, path: string[], value: any) => {
   }
 };
 
+
 export const fileUploadMiddleware = async (ctx: any, next: any) => {
-  const boundaryRegex = /^multipart\/form-data;\sboundary=(?<boundary>.*)$/;
-  const contentType = ctx.request.headers.get("content-type");
-  const match = contentType && contentType.match(boundaryRegex);
-  if (match) {
-    const formBoundary = match.groups!.boundary;
-    const mr = new MultipartReader(
-      ctx.request.serverRequest.body,
-      formBoundary
-    );
-    try {
-      let entries = [];
-      try {
-        const form = await mr.readForm();
-        entries = Array.from(form.entries());
-      } catch (e) {
-        throw new Error("Error parsing multipart");
+
+  const formData = await parseFormData(ctx.request);
+
+  const operations = getField(formData, 'operations');
+  if(!operations) {
+    throw new Error('operations not provided');
+  }
+
+  const map = getField(formData, 'map');
+  if(!map) {
+    throw new Error('map not provided');
+  }
+
+  // Populate operations from other fields
+  for(let [key, value] of formData) {
+    if(key !== 'operations' && key !== 'map') {
+      const paths = map[key] as string[];
+      if(paths) {
+        paths.forEach(path => setPath(operations, path.split('.'), value))  
       }
-
-      const operationsEntry = entries.find(
-        (entry) => entry[0] === "operations"
-      );
-      if (!operationsEntry || typeof operationsEntry[1] !== "string") {
-        throw new Error("operations not provided or invalid");
-      }
-      const operations = JSON.parse(operationsEntry[1]);
-
-      const mapEntry = entries.find((entry) => entry[0] === "map");
-      if (!mapEntry || typeof mapEntry[1] !== "string") {
-        throw new Error("map not provided or invalid");
-      }
-      const map = JSON.parse(mapEntry[1]);
-
-      entries.forEach(entry => {
-        const [key, value] = entry;
-        if (key !== "operations" && key !== "map" && map[key]) {
-          const paths = map[key] as string[];
-          paths.forEach((path) => setPath(operations, path.split("."), value));
-        }
-      });
-
-      ctx.params.operations = operations;
-    } catch (e) {
-      console.log(e);
     }
   }
 
-  return next();
+  ctx.params.operations = operations;
+
+  await next();
+
 };
+
+function getField(form: FormData, name: any) {
+  const value = form.get(name) as string;
+  if(value) {
+    return JSON.parse(value); 
+  }
+}
+
+async function parseFormData(request: Request) {
+  
+  const contentType = request.headers.get('content-type');
+
+  if(!contentType || !contentType.startsWith('multipart/form-data')) {
+    throw new Error('Invalid content-type');
+  }
+
+  const formData = new FormData();
+
+  // Native FormData handles parsing for us
+  formData.append('operations', '{}'); 
+  formData.append('map', '{}');
+
+  await request.formData();
+
+  return formData;
+
+}

@@ -1,6 +1,6 @@
 export { default as gql } from "./graphql-tag/index.ts";
 
-// @ts-nocheck
+// @ts-nocheck default export
 export {
   GraphQLEnumType,
   isSchema,
@@ -64,7 +64,7 @@ export {
   isCompositeType,
   execute,
   subscribe,
-} from "https://cdn.pika.dev/graphql@15.6.1";
+} from "https://cdn.skypack.dev/graphql@16.7.1";
 
 // export {
 //   GraphQLFieldConfig,
@@ -141,4 +141,3 @@ export {
 // } from "https://raw.githubusercontent.com/graphql/graphql-js/deno/index.d.ts"
 
 export { PubSub } from "./graphql-subscriptions/index.ts";
-export { MultipartReader } from "https://deno.land/std@0.143.0/mime/multipart.ts";
