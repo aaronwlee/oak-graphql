@@ -141,4 +141,3 @@ export {
 // } from "https://raw.githubusercontent.com/graphql/graphql-js/deno/index.d.ts"
 
 export { PubSub } from "./graphql-subscriptions/index.ts";
-export { FormData } from "https://deno.land/std/mime/mod.ts";
