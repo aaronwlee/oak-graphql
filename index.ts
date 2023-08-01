@@ -1,4 +1,4 @@
-import { Application, Router } from "https://deno.land/x/oak/mod.ts";
+import { Application, Router } from "https://deno.land/x/oak@v9.0.0/mod.ts";
 import {
   applyGraphQL,
   gql,
